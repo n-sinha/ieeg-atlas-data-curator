@@ -2,7 +2,7 @@ import numpy as np
 import nibabel as nib
 import pandas as pd
 
-# Import your custom modules
+# Import  custom modules
 from mergeROIs import merge_rois
 from mainUnivar import main_univar
 from univariateAbr import univariate_abr
@@ -10,6 +10,11 @@ from mainNetwork import main_network
 from networkAbr import network_abr
 from edgeslist2AbrConn import edgeslist_to_abr_conn
 from nodeAbrEdge import node_abr_edge
+from implant2roi import implant2roi
+
+from make_seizure_free_abr import make_seizure_free_abr
+from make_seizure_free import make_seizure_free
+
 
 # Set up paths
 # data_path = '../Data/'

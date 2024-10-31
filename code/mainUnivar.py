@@ -6,7 +6,9 @@ from sklearn.neighbors import NearestNeighbors
 
 # Assume the following custom functions are in respective Python files:
 from implant2roi import implant2roi
-from make_seizure_free import make_seizure_free, make_seizure_free_abr
+# from make_seizure_free import make_seizure_free, make_seizure_free_abr
+from make_seizure_free import make_seizure_free
+from make_seizure_free_abr import make_seizure_free_abr
 from norm_psd import get_norm_psd
 from norm_entropy import get_norm_entropy
 from plot_ieeg_atlas import plot_ieeg_atlas
