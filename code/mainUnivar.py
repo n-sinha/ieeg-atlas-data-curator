@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
-from scipy.signal import welch, hamming
+from scipy.signal import welch
+from scipy.signal.windows import hamming
 from sklearn.neighbors import NearestNeighbors
 
 # Assume the following custom functions are in respective Python files:
