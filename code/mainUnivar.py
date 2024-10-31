@@ -1,73 +1,64 @@
-def univariate_abr(norm_mni_hup_atlas, ieeg_hup_all):
-    """
-    Calculate standardized (z-score) power values for different frequency bands.
-    
-    Parameters:
-    norm_mni_hup_atlas: pandas DataFrame with mean and std values for each frequency band
-    ieeg_hup_all: pandas DataFrame with raw power values and ROI numbers
-    
-    Returns:
-    ieeg_hup_all_z: pandas DataFrame with standardized power values
-    """
-    import numpy as np
-    import pandas as pd
+import numpy as np
+import pandas as pd
+from scipy.signal import welch, hamming
+from sklearn.neighbors import NearestNeighbors
 
-    # Initialize array for z-scores
-    n_elec = len(ieeg_hup_all)
-    rel_pow_z = np.zeros((n_elec, 6))  # 6 frequency bands
+# Assume the following custom functions are in respective Python files:
+from implant2roi import implant2roi
+from make_seizure_free import make_seizure_free, make_seizure_free_abr
+from norm_psd import get_norm_psd
+from norm_entropy import get_norm_entropy
+from plot_ieeg_atlas import plot_ieeg_atlas
+from compare_ieeg_atlas import compare_ieeg_atlas
 
-    # Calculate z-scores for each electrode
-    for n_elec in range(len(ieeg_hup_all)):
-        # Get ROI number for current electrode
-        roi_num = ieeg_hup_all.loc[n_elec, 'roiNum']
-        
-        # Get normative means for all bands
-        norm_mu = np.array([
-            norm_mni_hup_atlas.loc[roi_num, 'deltaMean'],
-            norm_mni_hup_atlas.loc[roi_num, 'thetaMean'],
-            norm_mni_hup_atlas.loc[roi_num, 'alphaMean'],
-            norm_mni_hup_atlas.loc[roi_num, 'betaMean'],
-            norm_mni_hup_atlas.loc[roi_num, 'gammaMean'],
-            norm_mni_hup_atlas.loc[roi_num, 'broadMean']
-        ])
+def main_univar(metaData, atlas, MNI_atlas, HUP_atlasAll, EngelSFThres, spikeThresh):
+    # MNI atlas electrode to ROI
+    electrodeCord = MNI_atlas['ChannelPosition']
+    patientNum = MNI_atlas['Patient']
+    iEEGmni = implant2roi(atlas, electrodeCord, patientNum)
 
-        # Get normative standard deviations for all bands
-        norm_sigma = np.array([
-            norm_mni_hup_atlas.loc[roi_num, 'deltaStd'],
-            norm_mni_hup_atlas.loc[roi_num, 'thetaStd'],
-            norm_mni_hup_atlas.loc[roi_num, 'alphaStd'],
-            norm_mni_hup_atlas.loc[roi_num, 'betaStd'],
-            norm_mni_hup_atlas.loc[roi_num, 'gammaStd'],
-            norm_mni_hup_atlas.loc[roi_num, 'broadStd']
-        ])
+    # MNI atlas normalised bandpower
+    data_MNI = MNI_atlas['Data_W']
+    SamplingFrequency = MNI_atlas['SamplingFrequency']
+    iEEGmni = get_norm_psd(iEEGmni, data_MNI, SamplingFrequency)
 
-        # Get relative power values for current electrode
-        rel_pow = np.array([
-            ieeg_hup_all.loc[n_elec, 'delta'],
-            ieeg_hup_all.loc[n_elec, 'theta'],
-            ieeg_hup_all.loc[n_elec, 'alpha'],
-            ieeg_hup_all.loc[n_elec, 'beta'],
-            ieeg_hup_all.loc[n_elec, 'gamma'],
-            ieeg_hup_all.loc[n_elec, 'broad']
-        ])
+    # Seizure free HUP atlas electrode to ROI
+    HUP_atlas = make_seizure_free(HUP_atlasAll, metaData, EngelSFThres, spikeThresh)
+    electrodeCord = HUP_atlas['mni_coords']
+    patientNum = HUP_atlas['patient_no']
+    iEEGhup = implant2roi(atlas, electrodeCord, patientNum)
 
-        # Calculate z-scores
-        rel_pow_z[n_elec, :] = (rel_pow - norm_mu) / norm_sigma
+    # HUP atlas normalised bandpower
+    data_HUP = HUP_atlas['wake_clip']
+    SamplingFrequency = HUP_atlas['SamplingFrequency']
+    iEEGhup = get_norm_entropy(iEEGhup, data_HUP, SamplingFrequency)
 
-    # Take absolute value of abnormality
-    rel_pow_z = np.abs(rel_pow_z)
+    # Visualise MNI and HUP atlas
+    normMNIAtlas = plot_ieeg_atlas(iEEGmni, atlas, 'noplot')
+    normHUPAtlas = plot_ieeg_atlas(iEEGhup, atlas, 'noplot')
+    norm_MNI_HUP_Atlas = compare_ieeg_atlas(normMNIAtlas, normHUPAtlas, 'plot')
 
-    # Create output DataFrame
-    # First get the first 3 columns of original DataFrame
-    ieeg_hup_all_z = ieeg_hup_all.iloc[:, :3].copy()
-    
-    # Add z-score columns
-    z_scores_df = pd.DataFrame(
-        rel_pow_z,
-        columns=['delta_z', 'theta_z', 'alpha_z', 'beta_z', 'gamma_z', 'broad_z']
-    )
-    
-    # Concatenate original columns with z-scores
-    ieeg_hup_all_z = pd.concat([ieeg_hup_all_z, z_scores_df], axis=1)
+    # Process all HUP data
+    electrodeCord = HUP_atlasAll['mni_coords']
+    patientNum = HUP_atlasAll['patient_no']
+    iEEGhupAll = implant2roi(atlas, electrodeCord, patientNum)
+    data_HUPAll = HUP_atlasAll['wake_clip']
+    iEEGhupAll = get_norm_psd(iEEGhupAll, data_HUPAll, SamplingFrequency)
 
-    return ieeg_hup_all_z
+    # Abnormal HUP atlas
+    HUP_Abr_atlas = make_seizure_free_abr(HUP_atlasAll, metaData, EngelSFThres, spikeThresh)
+    electrodeCord = HUP_Abr_atlas['mni_coords']
+    patientNum = HUP_Abr_atlas['patient_no']
+    iEEGhupAbr = implant2roi(atlas, electrodeCord, patientNum)
+    data_HUPAbr = HUP_Abr_atlas['wake_clip']
+    SamplingFrequency = HUP_Abr_atlas['SamplingFrequency']
+    iEEGhupAbr = get_norm_psd(iEEGhupAbr, data_HUPAbr, SamplingFrequency)
+    abrnormHUPAtlas = plot_ieeg_atlas(iEEGhupAbr, atlas, 'noplot')
+    abrnormHUPAtlas = abrnormHUPAtlas.sort_values(by='nElecs', ascending=False)
+
+    # Address reviewer 1 comment
+    # pGrp, d = rev1_actual_pow(HUP_Abr_atlas, iEEGhupAbr, HUP_atlas, MNI_atlas, iEEGhup, iEEGmni)
+    # d = rev1_surg_outcome(HUP_atlasAll, iEEGhupAll, metaData)
+
+    return norm_MNI_HUP_Atlas, iEEGhupAll, abrnormHUPAtlas
+
