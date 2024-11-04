@@ -9,10 +9,10 @@ from implant2roi import implant2roi
 # from make_seizure_free import make_seizure_free, make_seizure_free_abr
 from make_seizure_free import make_seizure_free
 from make_seizure_free_abr import make_seizure_free_abr
-from norm_psd import get_norm_psd
-from norm_entropy import get_norm_entropy
-from plot_ieeg_atlas import plot_ieeg_atlas
-from compare_ieeg_atlas import compare_ieeg_atlas
+from getNormPSD import get_norm_psd
+from getNormEntropy import get_norm_entropy
+from plotiEEGatlas import plot_ieeg_atlas
+from compareiEEGatlas import compare_ieeg_atlas
 
 def main_univar(metaData, atlas, MNI_atlas, HUP_atlasAll, EngelSFThres, spikeThresh):
     # MNI atlas electrode to ROI

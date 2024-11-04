@@ -776,50 +776,9 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 15,
+   "execution_count": 14,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Loading MNI atlas...\n",
-      "Loading HUP atlas...\n",
-      "Loading metadata...\n",
-      "Loading custom atlas...\n",
-      "Loading roiAAL...\n",
-      "\n",
-      "Keys in roiAAL: dict_keys(['__header__', '__version__', '__globals__', 'None', '__function_workspace__'])\n",
-      "\n",
-      "Inspecting key: None\n",
-      "Data type and shape: <class 'scipy.io.matlab._mio5_params.MatlabOpaque'> (1,)\n",
-      "\n",
-      "Successfully created roiAAL DataFrame with shape: (1, 5)\n",
-      "Loading atlas data...\n",
-      "Creating custom atlas...\n"
-     ]
-    },
-    {
-     "ename": "KeyError",
-     "evalue": "1",
-     "output_type": "error",
-     "traceback": [
-      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
-      "\u001b[0;31mValueError\u001b[0m                                Traceback (most recent call last)",
-      "File \u001b[0;32m~/anaconda3/envs/cnt_gen/lib/python3.12/site-packages/pandas/core/indexes/range.py:413\u001b[0m, in \u001b[0;36mRangeIndex.get_loc\u001b[0;34m(self, key)\u001b[0m\n\u001b[1;32m    412\u001b[0m \u001b[38;5;28;01mtry\u001b[39;00m:\n\u001b[0;32m--> 413\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_range\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mindex\u001b[49m\u001b[43m(\u001b[49m\u001b[43mnew_key\u001b[49m\u001b[43m)\u001b[49m\n\u001b[1;32m    414\u001b[0m \u001b[38;5;28;01mexcept\u001b[39;00m \u001b[38;5;167;01mValueError\u001b[39;00m \u001b[38;5;28;01mas\u001b[39;00m err:\n",
-      "\u001b[0;31mValueError\u001b[0m: 1 is not in range",
-      "\nThe above exception was the direct cause of the following exception:\n",
-      "\u001b[0;31mKeyError\u001b[0m                                  Traceback (most recent call last)",
-      "Cell \u001b[0;32mIn[15], line 53\u001b[0m\n\u001b[1;32m     49\u001b[0m     plot_comparisons(norm_MNI_HUP_Atlas, iEEG_hup_all_z, base_path)\n\u001b[1;32m     51\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m norm_MNI_HUP_Atlas, iEEG_hup_all_z, abrnorm_hup_atlas\n\u001b[0;32m---> 53\u001b[0m norm_MNI_HUP_Atlas, iEEG_hup_all_z, abrnorm_hup_atlas \u001b[38;5;241m=\u001b[39m \u001b[43mmain\u001b[49m\u001b[43m(\u001b[49m\u001b[43m)\u001b[49m\n",
-      "Cell \u001b[0;32mIn[15], line 29\u001b[0m, in \u001b[0;36mmain\u001b[0;34m()\u001b[0m\n\u001b[1;32m     27\u001b[0m \u001b[38;5;66;03m# Create custom atlas\u001b[39;00m\n\u001b[1;32m     28\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mCreating custom atlas...\u001b[39m\u001b[38;5;124m\"\u001b[39m)\n\u001b[0;32m---> 29\u001b[0m atlasCustom, roiAALcustom \u001b[38;5;241m=\u001b[39m \u001b[43mmerge_rois\u001b[49m\u001b[43m(\u001b[49m\u001b[43mcustomAAL\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mroiAAL\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43matlas\u001b[49m\u001b[43m)\u001b[49m\n\u001b[1;32m     30\u001b[0m atlas[\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mtbl\u001b[39m\u001b[38;5;124m'\u001b[39m] \u001b[38;5;241m=\u001b[39m roiAAL\n\u001b[1;32m     31\u001b[0m atlasCustom[\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mtbl\u001b[39m\u001b[38;5;124m'\u001b[39m] \u001b[38;5;241m=\u001b[39m roiAALcustom\n",
-      "Cell \u001b[0;32mIn[4], line 9\u001b[0m, in \u001b[0;36mmerge_rois\u001b[0;34m(customAAL, roiAAL, atlas)\u001b[0m\n\u001b[1;32m      4\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21mmerge_rois\u001b[39m(customAAL, roiAAL, atlas):\n\u001b[1;32m      5\u001b[0m     \n\u001b[1;32m      6\u001b[0m     \u001b[38;5;66;03m# Convert inputs into appropriate types (assuming customAAL and roiAAL are Pandas DataFrames)\u001b[39;00m\n\u001b[1;32m      7\u001b[0m     \u001b[38;5;28;01mfor\u001b[39;00m roi \u001b[38;5;129;01min\u001b[39;00m \u001b[38;5;28mrange\u001b[39m(\u001b[38;5;28mlen\u001b[39m(customAAL)):\n\u001b[1;32m      8\u001b[0m         \u001b[38;5;66;03m# Assign parcel1 from roiAAL based on customAAL.Roi1\u001b[39;00m\n\u001b[0;32m----> 9\u001b[0m         customAAL\u001b[38;5;241m.\u001b[39mloc[roi, \u001b[38;5;124m'\u001b[39m\u001b[38;5;124mparcel1\u001b[39m\u001b[38;5;124m'\u001b[39m] \u001b[38;5;241m=\u001b[39m \u001b[43mroiAAL\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mloc\u001b[49m\u001b[43m[\u001b[49m\u001b[43mcustomAAL\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mloc\u001b[49m\u001b[43m[\u001b[49m\u001b[43mroi\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mRoi1\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m]\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mparcel\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m]\u001b[49m\n\u001b[1;32m     11\u001b[0m         \u001b[38;5;66;03m# Handle Roi2 assignment\u001b[39;00m\n\u001b[1;32m     12\u001b[0m         \u001b[38;5;28;01mif\u001b[39;00m np\u001b[38;5;241m.\u001b[39misnan(customAAL\u001b[38;5;241m.\u001b[39mloc[roi, \u001b[38;5;124m'\u001b[39m\u001b[38;5;124mRoi2\u001b[39m\u001b[38;5;124m'\u001b[39m]):\n",
-      "File \u001b[0;32m~/anaconda3/envs/cnt_gen/lib/python3.12/site-packages/pandas/core/indexing.py:1183\u001b[0m, in \u001b[0;36m_LocationIndexer.__getitem__\u001b[0;34m(self, key)\u001b[0m\n\u001b[1;32m   1181\u001b[0m     key \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mtuple\u001b[39m(com\u001b[38;5;241m.\u001b[39mapply_if_callable(x, \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mobj) \u001b[38;5;28;01mfor\u001b[39;00m x \u001b[38;5;129;01min\u001b[39;00m key)\n\u001b[1;32m   1182\u001b[0m     \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_is_scalar_access(key):\n\u001b[0;32m-> 1183\u001b[0m         \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mobj\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_get_value\u001b[49m\u001b[43m(\u001b[49m\u001b[38;5;241;43m*\u001b[39;49m\u001b[43mkey\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mtakeable\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_takeable\u001b[49m\u001b[43m)\u001b[49m\n\u001b[1;32m   1184\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_getitem_tuple(key)\n\u001b[1;32m   1185\u001b[0m \u001b[38;5;28;01melse\u001b[39;00m:\n\u001b[1;32m   1186\u001b[0m     \u001b[38;5;66;03m# we by definition only have the 0th axis\u001b[39;00m\n",
-      "File \u001b[0;32m~/anaconda3/envs/cnt_gen/lib/python3.12/site-packages/pandas/core/frame.py:4221\u001b[0m, in \u001b[0;36mDataFrame._get_value\u001b[0;34m(self, index, col, takeable)\u001b[0m\n\u001b[1;32m   4215\u001b[0m engine \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mindex\u001b[38;5;241m.\u001b[39m_engine\n\u001b[1;32m   4217\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m \u001b[38;5;28misinstance\u001b[39m(\u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mindex, MultiIndex):\n\u001b[1;32m   4218\u001b[0m     \u001b[38;5;66;03m# CategoricalIndex: Trying to use the engine fastpath may give incorrect\u001b[39;00m\n\u001b[1;32m   4219\u001b[0m     \u001b[38;5;66;03m#  results if our categories are integers that dont match our codes\u001b[39;00m\n\u001b[1;32m   4220\u001b[0m     \u001b[38;5;66;03m# IntervalIndex: IntervalTree has no get_loc\u001b[39;00m\n\u001b[0;32m-> 4221\u001b[0m     row \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mindex\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mget_loc\u001b[49m\u001b[43m(\u001b[49m\u001b[43mindex\u001b[49m\u001b[43m)\u001b[49m\n\u001b[1;32m   4222\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m series\u001b[38;5;241m.\u001b[39m_values[row]\n\u001b[1;32m   4224\u001b[0m \u001b[38;5;66;03m# For MultiIndex going through engine effectively restricts us to\u001b[39;00m\n\u001b[1;32m   4225\u001b[0m \u001b[38;5;66;03m#  same-length tuples; see test_get_set_value_no_partial_indexing\u001b[39;00m\n",
-      "File \u001b[0;32m~/anaconda3/envs/cnt_gen/lib/python3.12/site-packages/pandas/core/indexes/range.py:415\u001b[0m, in \u001b[0;36mRangeIndex.get_loc\u001b[0;34m(self, key)\u001b[0m\n\u001b[1;32m    413\u001b[0m         \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_range\u001b[38;5;241m.\u001b[39mindex(new_key)\n\u001b[1;32m    414\u001b[0m     \u001b[38;5;28;01mexcept\u001b[39;00m \u001b[38;5;167;01mValueError\u001b[39;00m \u001b[38;5;28;01mas\u001b[39;00m err:\n\u001b[0;32m--> 415\u001b[0m         \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mKeyError\u001b[39;00m(key) \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01merr\u001b[39;00m\n\u001b[1;32m    416\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;28misinstance\u001b[39m(key, Hashable):\n\u001b[1;32m    417\u001b[0m     \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mKeyError\u001b[39;00m(key)\n",
-      "\u001b[0;31mKeyError\u001b[0m: 1"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "# new \n",
     "\n",
@@ -871,9 +830,7 @@
     "    print(\"Generating comparison plots...\")\n",
     "    plot_comparisons(norm_MNI_HUP_Atlas, iEEG_hup_all_z, base_path)\n",
     "\n",
-    "    return norm_MNI_HUP_Atlas, iEEG_hup_all_z, abrnorm_hup_atlas\n",
-    "\n",
-    "norm_MNI_HUP_Atlas, iEEG_hup_all_z, abrnorm_hup_atlas = main()"
+    "    return norm_MNI_HUP_Atlas, iEEG_hup_all_z, abrnorm_hup_atlas"
    ]
   }
  ],
