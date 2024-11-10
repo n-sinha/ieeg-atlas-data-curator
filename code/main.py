@@ -15,17 +15,22 @@ def main():
     loader = AtlasDataLoader(base_path)
     loader.load_atlas_data()
     print("Data loaded successfully.")
-    
+
     # Initialize processor and atlas mapper
     print("Initializing processor and atlas mapper...")
     processor = iEEGProcessor()
-    atlas_mapper = AtlasMapper(loader.atlas_data)
+    atlas_mapper = AtlasMapper(loader.roi_info)
     print("Processor and atlas mapper initialized.")
-    
+
     # Map electrodes to ROIs
     print("Mapping electrodes to ROIs for MNI data...")
-    mni_electrode_to_roi = atlas_mapper.map_electrodes_to_rois(loader.mni_coords.values, loader.mni_idx_map_arr)
+    # Use the provided 'ChannelRegion' for MNI data
+    mni_electrode_to_roi = pd.DataFrame({
+        'roiNum': loader.mni_regions_num,
+        'patientNum': loader.mni_idx_map_arr
+    })
     print("Mapping electrodes to ROIs for HUP data...")
+    # Map HUP electrodes to ROIs using atlas mapper
     hup_electrode_to_roi = atlas_mapper.map_electrodes_to_rois(loader.hup_coords.values, loader.hup_idx_map_arr)
     
     # Print the number of electrodes and unique ROIs
