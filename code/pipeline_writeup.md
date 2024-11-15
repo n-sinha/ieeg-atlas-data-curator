@@ -110,3 +110,10 @@ from hup_iEEGnormal and mni -||-
 we have the feature for each electrode and we also have the coordinate of each electrode (ChannelPosition) -> you want to find nearest neighbor to assign coordinate
 
 2 ways of doing 
+
+NOTES ON STAT
+Random effects: Patient, Region
+Fixed effect: Site
+Model: Feature ~ Site + (1|Patient) + (1|Region)
+Account for nested data structure
+Handle unbalanced sampling
