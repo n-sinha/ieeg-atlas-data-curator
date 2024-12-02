@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import nibabel as nib
 from nilearn import plotting as niplot
+from pathlib import Path
 
 # %%
 def get_node_coords(atlas, atlas_LUT):
@@ -44,15 +45,21 @@ def get_node_coords(atlas, atlas_LUT):
     atlas_coord = pd.merge(atlas_LUT, atlas_coord, 
                           on='roiNum',
                           how='inner')
+    
+    atlas_coord.to_csv(script_dir.parent / 'Data' / 'atlas_coord.csv', index=False)
 
     return atlas_coord
 
 # %% 
 if __name__ == "__main__":
-
-    desikan_killiany = '/Users/nishant/Dropbox/Sinha/Lab/Research/t3_freesurfer/cvs_avg35_inMNI152/mri/aparc+aseg.nii.gz'
-    atlas_LUT = pd.read_csv('/Users/nishant/Dropbox/Sinha/Lab/Research/dwi_preprocess/atlas_lookuptable/desikanKilliany.csv')
-    atlas_coord = get_node_coords(atlas=desikan_killiany, atlas_LUT=atlas_LUT)
+    # Get the script's directory
+    script_dir = Path(__file__).parent.resolve()
+    
+    # Construct paths relative to the script location
+    desikan_killiany = script_dir.parent / 'Data' / 'aparc+aseg.nii.gz'
+    atlas_LUT = script_dir.parent / 'Data' / 'desikanKilliany.csv'
+    
+    atlas_coord = get_node_coords(atlas=str(desikan_killiany), atlas_LUT=pd.read_csv(atlas_LUT))
     
     # Create interactive 3D visualization
     view = niplot.view_markers(
