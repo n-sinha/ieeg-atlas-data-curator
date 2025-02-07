@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from typing import Union
 
+#%%
 class IEEGData:
     def __init__(self):
         """Initialize the IEEGData class."""
@@ -151,188 +152,188 @@ class IEEGData:
         
         return sf_ieeg_subjects
 
-def check_ieeg_recon_status(bids_dir: str, query_subjects: Union[str, pd.DataFrame, list]) -> dict:
-    """
-    Check which patients have completed IEEG reconstruction processing.
-    
-    Args:
-        bids_dir (str): Path to the BIDS directory
-        query_subjects (Union[str, pd.DataFrame, list]): Subject(s) to query. Can be:
-            - A single subject ID string (e.g., 'sub-RID0001')
-            - A DataFrame with subject IDs as index
-            - A list of subject IDs
-    
-    Returns:
-        dict: Dictionary containing two keys:
-            - 'processed': List of subjects with completed IEEG reconstruction
-            - 'not_processed': List of subjects without IEEG reconstruction
-    """
-    # Convert input to list of subject IDs
-    if isinstance(query_subjects, pd.DataFrame):
-        subjects_to_check = query_subjects.index.tolist()
-    elif isinstance(query_subjects, str):
-        subjects_to_check = [query_subjects]
-    elif isinstance(query_subjects, list):
-        subjects_to_check = query_subjects
-    else:
-        raise ValueError("query_subjects must be a string, DataFrame, or list")
+    def get_ieeg_recon_status(self, bids_dir: str, cnt_dir: str, subjects_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Check IEEG reconstruction status for subjects in both BIDS and CNT directories.
+        
+        Args:
+            bids_dir (str): Path to the BIDS directory
+            cnt_dir (str): Path to the CNT Implant Reconstructions directory
+            subjects_df (pd.DataFrame): DataFrame with subject IDs as index (must have record_ID)
+        
+        Returns:
+            pd.DataFrame: Original DataFrame with added columns:
+                - ieeg_recon_status: 'processed' (in BIDS), 'available' (in CNT), or 'missing'
+                - ieeg_recon_path: Full path to reconstruction data if available
+        """
+        # Create copy of input DataFrame to avoid modifying original
+        result_df = subjects_df.copy()
+        
+        # Initialize new columns
+        result_df['ieeg_recon_status'] = None
+        result_df['ieeg_recon_path'] = None
+        
+        # Check BIDS directory status
+        recon_status = self.check_ieeg_recon_status(bids_dir, result_df)
+        
+        # For subjects not in BIDS, check CNT directory
+        cnt_recon_status = self.check_cnt_recon_status(cnt_dir, recon_status['not_processed'])
+        
+        # Update status and paths
+        result_df.loc[recon_status['processed'], 'ieeg_recon_status'] = 'processed'
+        result_df.loc[recon_status['processed'], 'ieeg_recon_path'] = [
+            os.path.join(bids_dir, subject, 'derivatives/ieeg_recon/module2')
+            for subject in recon_status['processed']
+        ]
+        
+        result_df.loc[cnt_recon_status['available'].index, 'ieeg_recon_status'] = 'available'
+        result_df.loc[cnt_recon_status['available'].index, 'ieeg_recon_path'] = cnt_recon_status['available']['full_path']
+        
+        # Mark remaining subjects as missing
+        result_df.loc[cnt_recon_status['missing'], 'ieeg_recon_status'] = 'missing'
+        
+        return result_df
 
-    # Get all processed subjects from BIDS directory
-    available_subjects = os.listdir(bids_dir)
-    
-    # Create paths to ieeg_recon directories
-    recon_paths = {
-        subject: os.path.join(bids_dir, subject, 'derivatives/ieeg_recon/module2')
-        for subject in available_subjects
-    }
-    
-    # Check which paths exist
-    processed_subjects = [
-        subject for subject, path in recon_paths.items()
-        if os.path.exists(path) and subject in subjects_to_check
-    ]
-    
-    # Find subjects without processing
-    unprocessed_subjects = [
-        subject for subject in subjects_to_check
-        if subject not in processed_subjects
-    ]
-    
-    return {
-        'processed': processed_subjects,
-        'not_processed': unprocessed_subjects
-    }
+    def get_postopMRI_status(self, bids_dir: str, subjects_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Check both IEEG reconstruction and postop MRI status for subjects.
+        
+        Args:
+            bids_dir (str): Path to the BIDS directory
+            subjects_df (pd.DataFrame): DataFrame with subject IDs as index
+        
+        Returns:
+            pd.DataFrame: Original DataFrame with added column:
+                - postop_mri_status: 'available' or 'missing'
+        """
+        # Create copy of input DataFrame to avoid modifying original
+        result_df = subjects_df.copy()
+        
+        # Get all subjects from BIDS directory
+        available_subjects = os.listdir(bids_dir)
+        
+        # Check postop MRI status
+        result_df['postop_mri'] = 'missing'
+        for subject in available_subjects:
+            if subject in result_df.index:
+                postop_path = os.path.join(bids_dir, subject, 'ses-postop01')
+                if os.path.exists(postop_path):
+                    result_df.loc[subject, 'postop_mri'] = 'available'
+        
+        return result_df
 
-def check_cnt_recon_status(cnt_recon_dir: str, query_subjects: Union[str, pd.DataFrame, list]) -> dict:
-    """
-    Check which patients have reconstructions in the CNT Implant Reconstructions directory.
-    
-    Args:
-        cnt_recon_dir (str): Path to the CNT Implant Reconstructions directory
-        query_subjects (Union[str, pd.DataFrame, list]): Subject(s) to query. Can be:
-            - A single subject ID string (e.g., 'sub-RID0001')
-            - A DataFrame with subject IDs as index
-            - A list of subject IDs
-    
-    Returns:
-        dict: Dictionary containing:
-            - 'processed': DataFrame with subject IDs as index and full reconstruction paths
-            - 'not_processed': List of subjects without CNT reconstruction
-    """
-    # Convert input to list of subject IDs
-    if isinstance(query_subjects, pd.DataFrame):
-        subjects_to_check = query_subjects.index.tolist()
-    elif isinstance(query_subjects, str):
-        subjects_to_check = [query_subjects]
-    elif isinstance(query_subjects, list):
-        subjects_to_check = query_subjects
-    else:
-        raise ValueError("query_subjects must be a string, DataFrame, or list")
+    def check_ieeg_recon_status(self, bids_dir: str, query_subjects: Union[str, pd.DataFrame, list]) -> dict:
+        """
+        Check which patients have completed IEEG reconstruction processing.
+        
+        Args:
+            bids_dir (str): Path to the BIDS directory
+            query_subjects (Union[str, pd.DataFrame, list]): Subject(s) to query. Can be:
+                - A single subject ID string (e.g., 'sub-RID0001')
+                - A DataFrame with subject IDs as index
+                - A list of subject IDs
+        
+        Returns:
+            dict: Dictionary containing two keys:
+                - 'processed': List of subjects with completed IEEG reconstruction
+                - 'not_processed': List of subjects without IEEG reconstruction
+        """
+        # Convert input to list of subject IDs
+        if isinstance(query_subjects, pd.DataFrame):
+            subjects_to_check = query_subjects.index.tolist()
+        elif isinstance(query_subjects, str):
+            subjects_to_check = [query_subjects]
+        elif isinstance(query_subjects, list):
+            subjects_to_check = query_subjects
+        else:
+            raise ValueError("query_subjects must be a string, DataFrame, or list")
 
-    # Get CNT reconstruction folders and extract RIDs
-    cnt_folders = os.listdir(cnt_recon_dir)
-    recon_data = pd.DataFrame({
-        'folder_name': cnt_folders,
-        'rid_numbers': [re.findall(r'\d+', folder) for folder in cnt_folders]
-    })
-    
-    # Clean up the data
-    recon_data = recon_data[recon_data['rid_numbers'].map(len) > 0]
-    recon_data['record_id'] = recon_data['rid_numbers'].map(lambda x: x[0])
-    recon_data['record_id'] = 'sub-RID' + recon_data['record_id'].str.zfill(4)
-    recon_data['full_path'] = recon_data['folder_name'].map(
-        lambda x: os.path.join(cnt_recon_dir, x)
-    )
-    
-    # Set index and keep relevant columns
-    recon_data = recon_data.set_index('record_id')[['full_path']]
-    
-    # Filter for requested subjects
-    processed_subjects = recon_data[recon_data.index.isin(subjects_to_check)]
-    
-    # Find unprocessed subjects
-    unprocessed_subjects = [
-        subject for subject in subjects_to_check 
-        if subject not in processed_subjects.index
-    ]
-    
-    return {
-        'available': processed_subjects,
-        'missing': unprocessed_subjects
-    }
+        # Get all processed subjects from BIDS directory
+        available_subjects = os.listdir(bids_dir)
+        
+        # Create paths to ieeg_recon directories
+        recon_paths = {
+            subject: os.path.join(bids_dir, subject, 'derivatives/ieeg_recon/module2')
+            for subject in available_subjects
+        }
+        
+        # Check which paths exist
+        processed_subjects = [
+            subject for subject, path in recon_paths.items()
+            if os.path.exists(path) and subject in subjects_to_check
+        ]
+        
+        # Find subjects without processing
+        unprocessed_subjects = [
+            subject for subject in subjects_to_check
+            if subject not in processed_subjects
+        ]
+        
+        return {
+            'processed': processed_subjects,
+            'not_processed': unprocessed_subjects
+        }
 
-def get_ieeg_recon_status(bids_dir: str, cnt_dir: str, subjects_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Check IEEG reconstruction status for subjects in both BIDS and CNT directories.
-    
-    Args:
-        bids_dir (str): Path to the BIDS directory
-        cnt_dir (str): Path to the CNT Implant Reconstructions directory
-        subjects_df (pd.DataFrame): DataFrame with subject IDs as index (must have record_ID)
-    
-    Returns:
-        pd.DataFrame: Original DataFrame with added columns:
-            - ieeg_recon_status: 'processed' (in BIDS), 'available' (in CNT), or 'missing'
-            - ieeg_recon_path: Full path to reconstruction data if available
-    """
-    # Create copy of input DataFrame to avoid modifying original
-    result_df = subjects_df.copy()
-    
-    # Initialize new columns
-    result_df['ieeg_recon_status'] = None
-    result_df['ieeg_recon_path'] = None
-    
-    # Check BIDS directory status
-    recon_status = check_ieeg_recon_status(bids_dir, result_df)
-    
-    # For subjects not in BIDS, check CNT directory
-    cnt_recon_status = check_cnt_recon_status(cnt_dir, recon_status['not_processed'])
-    
-    # Update status and paths
-    result_df.loc[recon_status['processed'], 'ieeg_recon_status'] = 'processed'
-    result_df.loc[recon_status['processed'], 'ieeg_recon_path'] = [
-        os.path.join(bids_dir, subject, 'derivatives/ieeg_recon/module2')
-        for subject in recon_status['processed']
-    ]
-    
-    result_df.loc[cnt_recon_status['available'].index, 'ieeg_recon_status'] = 'available'
-    result_df.loc[cnt_recon_status['available'].index, 'ieeg_recon_path'] = cnt_recon_status['available']['full_path']
-    
-    # Mark remaining subjects as missing
-    result_df.loc[cnt_recon_status['missing'], 'ieeg_recon_status'] = 'missing'
-    
-    return result_df
+    def check_cnt_recon_status(self, cnt_recon_dir: str, query_subjects: Union[str, pd.DataFrame, list]) -> dict:
+        """
+        Check which patients have reconstructions in the CNT Implant Reconstructions directory.
+        
+        Args:
+            cnt_recon_dir (str): Path to the CNT Implant Reconstructions directory
+            query_subjects (Union[str, pd.DataFrame, list]): Subject(s) to query. Can be:
+                - A single subject ID string (e.g., 'sub-RID0001')
+                - A DataFrame with subject IDs as index
+                - A list of subject IDs
+        
+        Returns:
+            dict: Dictionary containing:
+                - 'processed': DataFrame with subject IDs as index and full reconstruction paths
+                - 'not_processed': List of subjects without CNT reconstruction
+        """
+        # Convert input to list of subject IDs
+        if isinstance(query_subjects, pd.DataFrame):
+            subjects_to_check = query_subjects.index.tolist()
+        elif isinstance(query_subjects, str):
+            subjects_to_check = [query_subjects]
+        elif isinstance(query_subjects, list):
+            subjects_to_check = query_subjects
+        else:
+            raise ValueError("query_subjects must be a string, DataFrame, or list")
 
-def get_postopMRI_status(bids_dir: str, subjects_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Check both IEEG reconstruction and postop MRI status for subjects.
-    
-    Args:
-        bids_dir (str): Path to the BIDS directory
-        subjects_df (pd.DataFrame): DataFrame with subject IDs as index
-    
-    Returns:
-        pd.DataFrame: Original DataFrame with added column:
-            - postop_mri_status: 'available' or 'missing'
-    """
-    # Create copy of input DataFrame to avoid modifying original
-    result_df = subjects_df.copy()
-    
-    # Get all subjects from BIDS directory
-    available_subjects = os.listdir(bids_dir)
-    
-    # Check postop MRI status
-    result_df['postop_mri'] = 'missing'
-    for subject in available_subjects:
-        if subject in result_df.index:
-            postop_path = os.path.join(bids_dir, subject, 'ses-postop01')
-            if os.path.exists(postop_path):
-                result_df.loc[subject, 'postop_mri'] = 'available'
-    
-    return result_df
+        # Get CNT reconstruction folders and extract RIDs
+        cnt_folders = os.listdir(cnt_recon_dir)
+        recon_data = pd.DataFrame({
+            'folder_name': cnt_folders,
+            'rid_numbers': [re.findall(r'\d+', folder) for folder in cnt_folders]
+        })
+        
+        # Clean up the data
+        recon_data = recon_data[recon_data['rid_numbers'].map(len) > 0]
+        recon_data['record_id'] = recon_data['rid_numbers'].map(lambda x: x[0])
+        recon_data['record_id'] = 'sub-RID' + recon_data['record_id'].str.zfill(4)
+        recon_data['full_path'] = recon_data['folder_name'].map(
+            lambda x: os.path.join(cnt_recon_dir, x)
+        )
+        
+        # Set index and keep relevant columns
+        recon_data = recon_data.set_index('record_id')[['full_path']]
+        
+        # Filter for requested subjects
+        processed_subjects = recon_data[recon_data.index.isin(subjects_to_check)]
+        
+        # Find unprocessed subjects
+        unprocessed_subjects = [
+            subject for subject in subjects_to_check 
+            if subject not in processed_subjects.index
+        ]
+        
+        return {
+            'available': processed_subjects,
+            'missing': unprocessed_subjects
+        }
 
-def main():
-    """Main function to process and analyze IEEG data."""
+#%%
+if __name__ == "__main__":
     ieeg = IEEGData()
     sf_ieeg_subjects = ieeg.normative_ieeg_subjects()
     print(sf_ieeg_subjects['intervention_pecclinical'].value_counts())
@@ -340,8 +341,8 @@ def main():
     # Use new function to get reconstruction status
     bids_dir = '/Users/nishant/Dropbox/Sinha/Lab/Research/epi_t3_iEEG/data/BIDS'
     cnt_dir = '/Users/nishant/Library/CloudStorage/Box-Box/CNT Implant Reconstructions'
-    sf_ieeg_subjects = get_ieeg_recon_status(bids_dir, cnt_dir, sf_ieeg_subjects)
-    sf_ieeg_subjects = get_postopMRI_status(bids_dir, sf_ieeg_subjects)
+    sf_ieeg_subjects = ieeg.get_ieeg_recon_status(bids_dir, cnt_dir, sf_ieeg_subjects)
+    sf_ieeg_subjects = ieeg.get_postopMRI_status(bids_dir, sf_ieeg_subjects)
 
     # Define priority groups
     priority1 = sf_ieeg_subjects[
@@ -407,7 +408,4 @@ def main():
     summary_df.to_csv(summary_path, index=False)
     print(f"\nSaved summary to {summary_path}")
 
-    return priority_dict
-
-if __name__ == "__main__":
-    main()
+# %%
