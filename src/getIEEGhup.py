@@ -6,6 +6,7 @@ import os
 import dotenv
 import mne
 import shutil
+
 #%%
 class IEEGDataDownloader(IEEGData):
     """
