@@ -5,10 +5,6 @@
 
 # %%
 import os
-import sys
-
-code_path = os.path.dirname(os.getcwd())
-sys.path.append(code_path)
 
 import json
 from os.path import join as ospj

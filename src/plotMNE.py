@@ -3,7 +3,7 @@ import numpy as np
 import os, sys
 import mne
 import matplotlib
-matplotlib.use('qtagg')  # Using the newer Qt backend
+matplotlib.use('qtagg')
 import matplotlib.pyplot as plt
 
 #%%
