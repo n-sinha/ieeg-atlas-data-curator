@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 from aggregateIEEGhup import IEEGData
 from utilitiesIEEG import IEEGTools
-from plotMNE import plot_eeg
 
 # %%
 ieeg = IEEGData()

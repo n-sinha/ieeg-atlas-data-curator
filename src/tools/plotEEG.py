@@ -5,6 +5,7 @@ import mne
 import matplotlib
 matplotlib.use('qtagg')
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 #%%
 def plot_eeg(data_df, fs):
@@ -23,21 +24,26 @@ def plot_eeg(data_df, fs):
     raw = mne.io.RawArray(data_df.values.T, info)
     
     # Plot with interactive settings
-    raw.plot(
-        scalings='auto',
+    fig = raw.plot(
+        scalings='auto',  # Changed to auto for better initial scaling
         n_channels=len(labels),
-        title='EEG Recording',
+        title='EEG Recording\n'
+              '(Use +/- keys to scale, = to reset)\n'
+              '(Click & drag to select area, arrow keys to navigate)',
         show=True,
         block=True,
         duration=10,
         start=0
     )
 
-# Example usage
+#%% Example usage
 if __name__ == "__main__":
     # Initialize path to data
-    PKL_PATH = '/Users/nishant/Dropbox/Sinha/Lab/Research/ieeg_atlas_harmonization/data/hup/derivatives/bipolar/sub-RID0031/interictal_eeg_bipolar_10.pkl'
+    root_dir = Path(__file__).parent.parent
+    PKL_PATH = '/Users/nishant/Dropbox/Sinha/Lab/Research/ieeg_atlas_harmonization/data/hup/derivatives/bipolar/sub-RID0031/interictal_eeg_bipolar_0.pkl'
     eeg = np.load(PKL_PATH, allow_pickle=True)
     plot_eeg(eeg, fs=200)
 
 
+
+# %%

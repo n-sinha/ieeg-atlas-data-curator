@@ -56,40 +56,108 @@ class IEEGDataDownloader(IEEGData):
 
         return seizures_times
     
-    def get_interical_data_cache(self, record_id: str, cache_dir: str, destination_dir: str):
+    def get_sleep_times(self, subjects: Union[pd.DataFrame, list, None] = None):
         """
-        Get cached interical data for a given record ID.
+        Get sleep timing information for specified subjects.
+
+        Args:
+            subjects (Union[pd.DataFrame, list, None], optional): Subject identifiers to filter the data.
+        """
+
+        pass
+        
+    
+    def get_interical_data_cache(self, record_id: str, cache_dir: str, destination_dir: str, dry_run: bool = True):
+        """
+        Get cached interical data for a given record ID and copy it to the destination directory.
 
         Args:
             record_id (str): The record ID of the IEEG.org dataset.
-            cache_dir (str): The directory to save the cached data.
+            cache_dir (str): The directory containing the cached data.
+            destination_dir (str): The directory where data should be copied.
+            dry_run (bool, optional): If True, only show what would be copied without actually copying.
+                                    Defaults to True for safety.
+
+        Returns:
+            list: List of operations that were performed or would be performed (in dry run mode)
         """
-
+        # Get list of all items in the cache directory
         available_subjects = os.listdir(cache_dir)
-        hup_id = [x[-3:] for x in available_subjects if x.startswith('HUP')]
+        
+        # Extract the 3-digit subject numbers from folders that start with 'HUP'
+        available_subjects = [x[-3:] for x in available_subjects if x.startswith('HUP')]
+        
+        # Get normative subjects and filter for those with cached data
+        sf_ieeg_subjects = self.normative_ieeg_subjects()
+        cache_data = sf_ieeg_subjects[sf_ieeg_subjects['hupsubjno'].isin(available_subjects)]
+        
+        # Filter for specific record if provided
+        if record_id:
+            cache_data = cache_data[cache_data.index == record_id]
+            if len(cache_data) == 0:
+                raise ValueError(f"No cached data found for record ID: {record_id}")
 
+        operations = []
         
-        
+        if dry_run:
+            print("\nAvailable subjects:")
+            print("HUP ID\tRecord ID")
+            print("-" * 20)
+            for idx, row in cache_data.iterrows():
+                print(f"HUP{int(row['hupsubjno']):03d}\t{idx}")
+            return operations
+
+        for idx, row in cache_data.iterrows():
+            # Construct source directory path
+            subject_hup = f"HUP{int(row['hupsubjno']):03d}"
+            source_path = os.path.join(cache_dir, subject_hup, 'interictal')
+            
+            if not os.path.exists(source_path):
+                print(f"Skipping: Source directory not found - {source_path}")
+                continue
+                
+            # Find all interictal files
+            interictal_files = [x for x in os.listdir(source_path) 
+                              if x.startswith('interictal_eeg_bipolar_')]
+            
+            # Create subject directory in destination
+            subject_dir = os.path.join(destination_dir, idx)
+            os.makedirs(subject_dir, exist_ok=True)
+            
+            # Process each file
+            for file in interictal_files:
+                source_file = os.path.join(source_path, file)
+                dest_file = os.path.join(subject_dir, file)
+                operations.append(f"Copying: {source_file} -> {dest_file}")
+                shutil.copy(source_file, dest_file)
+            
+        for op in operations:
+            print(op)
+            
+        return operations
+
 #%%
 if __name__ == "__main__":
-    # Get priority groups from aggregateIEEGhup
+    # Initialize the downloader
     ieeg = IEEGDataDownloader()
+    
+    # Define the base directory where cached data is stored
+    # cache_dir = ieeg.root_dir.parent / 'sixth_sense' / 'data'
+    cache_dir = ieeg.root_dir / 'data' / 'hup' / 'derivatives' / 'bipolar' 
+    cache_subjects = os.listdir(cache_dir)
+    # cache_subjects = [x for x in cache_subjects if x.startswith('HUP')]
+    # destination_dir = ieeg.root_dir / 'data' / 'hup' / 'sourcedata'
+
+    #%%
     sf_ieeg_subjects = ieeg.normative_ieeg_subjects()
+    sf_ieeg_subjects['hupsubjno'] = 'HUP' + sf_ieeg_subjects['hupsubjno'].astype(str).str.zfill(3)
+    sf_ieeg_subjects = sf_ieeg_subjects[~sf_ieeg_subjects.index.isin(cache_subjects)]
 
-    cache_dir = '/Users/nishant/Dropbox/Sinha/Lab/Research/epi_iEEG_focality/sixth_sense/data'
-    available_subjects = os.listdir(cache_dir)
-    available_subjects = [x[-3:] for x in available_subjects if x.startswith('HUP')]
-    cache_data = sf_ieeg_subjects[sf_ieeg_subjects['hupsubjno'].isin(available_subjects)]
-    source_dir = cache_dir + '/HUP' + cache_data['hupsubjno'].astype(str).str.zfill(3) + '/interictal'
-    destination_dir = ieeg.root_dir / 'data' / 'hup' / 'sourcedata'
 
-#%%
-    for s in range(len(source_dir)):
-        interictal_files = [x for x in os.listdir(source_dir[s]) if x.startswith('interictal_eeg_bipolar_')]
-        # make a directory for each file
-        subject_dir = destination_dir / source_dir.index[s]
-        os.makedirs(subject_dir, exist_ok=True)
-        for file in interictal_files:
-            # copy the file to the new directory
-            shutil.copy(source_dir[s] + '/' + file, subject_dir)
+    sleep_times = pd.read_pickle(ieeg.root_dir / 'data' / 'hup' / 'derivatives' / 'sleep_times.pkl')
+    sf_ieeg_subjects = sf_ieeg_subjects[sf_ieeg_subjects['hupsubjno'].isin(sleep_times['name'])]
+
+
+
+    
 # %%

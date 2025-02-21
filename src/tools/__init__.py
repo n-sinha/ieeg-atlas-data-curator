@@ -14,3 +14,4 @@ from .LoadNetworks import LoadNetworks
 from .LoadBandpower import LoadBandpower
 from .format_bandpower import format_bandpower
 from .butter_bp_filter import butter_bp_filter
+from .plotEEG import plot_eeg
