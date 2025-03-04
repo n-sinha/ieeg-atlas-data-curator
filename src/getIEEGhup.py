@@ -69,7 +69,7 @@ class IEEGDataDownloader(IEEGData):
     
     def get_interical_data_cache(self, record_id: str, cache_dir: str, destination_dir: str, dry_run: bool = True):
         """
-        Get cached interical data for a given record ID and copy it to the destination directory.
+        Get cached interictal data for a given record ID and copy it to the destination directory.
 
         Args:
             record_id (str): The record ID of the IEEG.org dataset.
@@ -146,14 +146,16 @@ if __name__ == "__main__":
     cache_dir = ieeg.root_dir / 'data' / 'hup' / 'derivatives' / 'bipolar' 
     cache_subjects = os.listdir(cache_dir)
     # cache_subjects = [x for x in cache_subjects if x.startswith('HUP')]
-    # destination_dir = ieeg.root_dir / 'data' / 'hup' / 'sourcedata'
 
     #%%
     sf_ieeg_subjects = ieeg.normative_ieeg_subjects()
     sf_ieeg_subjects['hupsubjno'] = 'HUP' + sf_ieeg_subjects['hupsubjno'].astype(str).str.zfill(3)
     sf_ieeg_subjects = sf_ieeg_subjects[~sf_ieeg_subjects.index.isin(cache_subjects)]
 
+    #%%
+    ieeg.get_interical_data_cache(record_id='sub-RID0001', cache_dir=cache_dir, destination_dir=destination_dir, dry_run=False)
 
+    #%%
     sleep_times = pd.read_pickle(ieeg.root_dir / 'data' / 'hup' / 'derivatives' / 'sleep_times.pkl')
     sf_ieeg_subjects = sf_ieeg_subjects[sf_ieeg_subjects['hupsubjno'].isin(sleep_times['name'])]
 
