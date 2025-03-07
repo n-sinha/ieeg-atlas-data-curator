@@ -7,7 +7,7 @@ from pathlib import Path
 from IPython import embed
 from multiprocessing import Pool
 from typing import Union, List, Tuple
-from autoreject import get_rejection_threshold
+import mne
 
 
 #%%
@@ -42,7 +42,11 @@ class IEEGClipProcessor:
         
         ieeg = pd.DataFrame()
 
-        electrodes2ROI = pd.read_csv(ieeg_recon_path)
+        electrodes2ROI = pd.read_csv(ieeg_recon_path).set_index('labels')
+        
+        # Store original labels and clean them
+        electrodes2ROI['original_labels'] = electrodes2ROI.index
+        electrodes2ROI['clean_labels'] = self._clean_labels(electrodes2ROI.index)
         
         with h5py.File(ieeg_file_path, 'r') as f:
             all_clips = list(f.keys())
@@ -54,29 +58,56 @@ class IEEGClipProcessor:
 
         ieeg_interictal = ieeg.reset_index(drop=True)
 
-        recon_channels = self._clean_labels(electrodes2ROI['labels'])
-        ieeg_interictal_channels = self._clean_labels(ieeg_interictal.columns)
-
-        # find the intersection of ieeg_interictal_channels and recon_channels
-        keep_channels = list(set(ieeg_interictal_channels) & set(recon_channels))
+        # Clean ieeg labels
+        ieeg_clean_labels = self._clean_labels(ieeg_interictal.columns)
+        ieeg_label_map = dict(zip(ieeg_clean_labels, ieeg_interictal.columns))
         
-        if keep_channels == []:
+        # Find common channels using cleaned labels
+        keep_channels = list(set(ieeg_clean_labels) & set(electrodes2ROI['clean_labels']))
+        
+        if not keep_channels:
             raise ValueError(f"No common channels found between ieeg_interictal and ieeg_recon for subject {subject_id}")
         
-        # keep only the channels that are in keep_channels
-        ieeg_interictal = ieeg_interictal.loc[:, keep_channels]
-        electrodes2ROI = electrodes2ROI[electrodes2ROI['labels'].isin(keep_channels)]
+        # Get original ieeg channel names for the kept channels
+        keep_channels_ieeg = [ieeg_label_map[ch] for ch in keep_channels]
+        
+        # Get indices in electrodes2ROI where clean_labels are in keep_channels
+        keep_mask = electrodes2ROI['clean_labels'].isin(keep_channels)
+        
+        # Select channels
+        ieeg_interictal = ieeg_interictal.loc[:, keep_channels_ieeg]
+        electrodes2ROI = electrodes2ROI[keep_mask]
+
+        embed()
 
         # identify bad channels
         bad_channels, details = self.identify_bad_channels(ieeg_interictal.values, sampling_rate)
-        reject = get_rejection_threshold(ieeg_interictal.values)  
-
-        embed()
 
         # remove bad channels
         good_channels = ~bad_channels
         ieeg_interictal = ieeg_interictal.iloc[:, good_channels]
-        
+        electrodes2ROI = electrodes2ROI.iloc[good_channels]
+
+        # embed()
+        # # Create MNE info object
+        # labels = list(ieeg_interictal.columns)
+        # info = mne.create_info(ch_names=labels, sfreq=sampling_rate, ch_types=['eeg'] * len(labels))
+
+        # # make ieeg_data to mne raw object
+        # ieeg_interictal_mne = mne.io.RawArray(ieeg_interictal.values.T, info)
+
+        # # Plot with interactive settings
+        # fig = ieeg_interictal_mne.plot(
+        #     scalings='auto',  # Changed to auto for better initial scaling
+        #     n_channels=len(labels),
+        #     title='EEG Recording\n'
+        #           '(Use +/- keys to scale, = to reset)\n'
+        #           '(Click & drag to select area, arrow keys to navigate)',
+        #     show=True,
+        #     block=False,  # Changed to False so code continues to embed
+        #     duration=10,
+        #     start=0
+        # )
 
         return ieeg_interictal
     
