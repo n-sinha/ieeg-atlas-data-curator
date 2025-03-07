@@ -8,6 +8,7 @@ from IPython import embed
 from multiprocessing import Pool
 from typing import Union, List, Tuple
 import mne
+from scipy import signal
 
 
 #%%
@@ -22,12 +23,13 @@ class IEEGClipProcessor:
         self.percent_60_hz = 0.7
         self.mult_std = 10
 
-    def load_ieeg_clips(self, subject_id: str) -> pd.DataFrame:
+    def load_ieeg_clips(self, subject_id: str, plotEEG: bool = False) -> pd.DataFrame:
         """
         Load all iEEG clips from an H5 file into a single DataFrame.
         
         Args:
-            file_path (Path): Path to the H5 file containing iEEG clips
+            subject_id (str): Subject ID to load data for
+            plotEEG (bool, optional): Whether to plot the EEG data. Defaults to False.
             
         Returns:
             pd.DataFrame: Combined DataFrame containing all clips, with channels as columns
@@ -44,10 +46,6 @@ class IEEGClipProcessor:
 
         electrodes2ROI = pd.read_csv(ieeg_recon_path).set_index('labels')
         
-        # Store original labels and clean them
-        electrodes2ROI['original_labels'] = electrodes2ROI.index
-        electrodes2ROI['clean_labels'] = self._clean_labels(electrodes2ROI.index)
-        
         with h5py.File(ieeg_file_path, 'r') as f:
             all_clips = list(f.keys())
             for clip_id in all_clips:
@@ -59,27 +57,24 @@ class IEEGClipProcessor:
         ieeg_interictal = ieeg.reset_index(drop=True)
 
         # Clean ieeg labels
-        ieeg_clean_labels = self._clean_labels(ieeg_interictal.columns)
-        ieeg_label_map = dict(zip(ieeg_clean_labels, ieeg_interictal.columns))
+        ieeg_interictal.columns = self._clean_labels(ieeg_interictal.columns)
+        electrodes2ROI['clean_labels'] = self._clean_labels(electrodes2ROI.index)
         
         # Find common channels using cleaned labels
-        keep_channels = list(set(ieeg_clean_labels) & set(electrodes2ROI['clean_labels']))
+        keep_channels = list(set(ieeg_interictal.columns) & set(electrodes2ROI['clean_labels']))
         
         if not keep_channels:
             raise ValueError(f"No common channels found between ieeg_interictal and ieeg_recon for subject {subject_id}")
         
-        # Get original ieeg channel names for the kept channels
-        keep_channels_ieeg = [ieeg_label_map[ch] for ch in keep_channels]
-        
-        # Get indices in electrodes2ROI where clean_labels are in keep_channels
-        keep_mask = electrodes2ROI['clean_labels'].isin(keep_channels)
-        
-        # Select channels
-        ieeg_interictal = ieeg_interictal.loc[:, keep_channels_ieeg]
-        electrodes2ROI = electrodes2ROI[keep_mask]
+        # Filter electrodes2ROI and ieeg_interictal to keep only common channels
+        electrodes2ROI = electrodes2ROI[electrodes2ROI['clean_labels'].isin(keep_channels)]
+        # make clean labels the index
+        electrodes2ROI = electrodes2ROI.reset_index().set_index('clean_labels')
+        ieeg_interictal = ieeg_interictal.loc[:, keep_channels]
 
-        embed()
-
+        # Reorder electrodes2ROI to match ieeg_interictal
+        electrodes2ROI = electrodes2ROI.loc[ieeg_interictal.columns]
+        
         # identify bad channels
         bad_channels, details = self.identify_bad_channels(ieeg_interictal.values, sampling_rate)
 
@@ -88,29 +83,156 @@ class IEEGClipProcessor:
         ieeg_interictal = ieeg_interictal.iloc[:, good_channels]
         electrodes2ROI = electrodes2ROI.iloc[good_channels]
 
-        # embed()
-        # # Create MNE info object
-        # labels = list(ieeg_interictal.columns)
-        # info = mne.create_info(ch_names=labels, sfreq=sampling_rate, ch_types=['eeg'] * len(labels))
+        ieeg_filtered, _, _ = self._montage_filter(ieeg_interictal, sampling_rate)
+        
+        # remove channels not in ieeg_filtered
+        electrodes2ROI = electrodes2ROI[electrodes2ROI.index.isin(ieeg_filtered.columns)]
 
-        # # make ieeg_data to mne raw object
-        # ieeg_interictal_mne = mne.io.RawArray(ieeg_interictal.values.T, info)
 
-        # # Plot with interactive settings
-        # fig = ieeg_interictal_mne.plot(
-        #     scalings='auto',  # Changed to auto for better initial scaling
-        #     n_channels=len(labels),
-        #     title='EEG Recording\n'
-        #           '(Use +/- keys to scale, = to reset)\n'
-        #           '(Click & drag to select area, arrow keys to navigate)',
-        #     show=True,
-        #     block=False,  # Changed to False so code continues to embed
-        #     duration=10,
-        #     start=0
-        # )
+        # remove channels in white-matter and outside brain
+        electrodes2ROI = electrodes2ROI[electrodes2ROI['roi'] != 'white-matter']
+        electrodes2ROI = electrodes2ROI[electrodes2ROI['roi'] != 'outside-brain']
 
-        return ieeg_interictal
+        # remove channels not in electrodes2ROI
+        ieeg_filtered = ieeg_filtered.loc[:, electrodes2ROI.index]
+
+        # sort electrodes2ROI by index and ieeg_filtered by columns
+        electrodes2ROI = electrodes2ROI.sort_index()
+        electrodes2ROI.index.name = 'labels_clean'
+        ieeg_filtered = ieeg_filtered.loc[:, electrodes2ROI.index]
+
+        if not np.array_equal(electrodes2ROI.index, ieeg_filtered.columns):
+            raise ValueError(f"Electrodes2ROI and ieeg_filtered do not have the same channels for subject {subject_id}")
+        
+        
+        if plotEEG:
+            # Create MNE info object
+            labels = list(ieeg_filtered.columns)
+            info = mne.create_info(ch_names=labels, sfreq=sampling_rate, ch_types=['eeg'] * len(labels))
+
+            # make ieeg_data to mne raw object
+            ieeg_interictal_mne = mne.io.RawArray(ieeg_filtered.values.T, info)
+
+            # Plot with interactive settings
+            fig = ieeg_interictal_mne.plot(
+                scalings='auto',
+                n_channels=len(labels),
+                title='EEG Recording\n'
+                      '(Use +/- keys to scale, = to reset)\n'
+                      '(Click & drag to select area, arrow keys to navigate)',
+                show=True,
+                block=False,
+                duration=10,
+                start=0
+            )
+
+        return ieeg_filtered, electrodes2ROI
     
+    def _montage_filter(self, ieeg_interictal: pd.DataFrame, sampling_rate: int) -> pd.DataFrame:
+        '''
+        Apply bipolar montage and filter the iEEG data:
+        1. First creates a bipolar montage
+        2. Applies a bandpass filter between 0.5Hz and 80Hz
+        3. Applies a notch filter at 60Hz to remove power line noise
+        
+        Args:
+            ieeg_interictal (pd.DataFrame): iEEG data with channel names as columns
+            sampling_rate (int): Sampling rate of the data in Hz
+            
+        Returns:
+            pd.DataFrame: Filtered bipolar montage data
+        '''
+        # Apply automatic bipolar montage first
+        ieeg_bipolar = self._automatic_bipolar_montage(ieeg_interictal)
+        
+        # Check if bipolar montage was successful
+        if ieeg_bipolar.empty:
+            print("Warning: Bipolar montage resulted in empty DataFrame. Using original data.")
+            ieeg_bipolar = ieeg_interictal.copy()
+        
+        # Convert DataFrame to numpy array for filtering (channels are columns)
+        data = ieeg_bipolar.values
+        
+        # Define filter parameters
+        nyquist = sampling_rate / 2  # Nyquist frequency
+        low_freq = 0.5 / nyquist     # Low cut-off frequency (normalized)
+        high_freq = 80 / nyquist     # High cut-off frequency (normalized)
+        notch_freq = 60 / nyquist    # Notch filter frequency (normalized)
+        
+        # Design bandpass filter - 4th order Butterworth filter
+        b_bandpass, a_bandpass = signal.butter(4, [low_freq, high_freq], btype='bandpass')
+        
+        # Apply bandpass filter
+        filtered_data = signal.filtfilt(b_bandpass, a_bandpass, data, axis=0)
+        
+        # Design notch filter - quality factor Q=30 (narrower is higher Q)
+        b_notch, a_notch = signal.iirnotch(notch_freq, Q=30, fs=sampling_rate)
+        
+        # Apply notch filter
+        filtered_data = signal.filtfilt(b_notch, a_notch, filtered_data, axis=0)
+        
+        # Convert back to DataFrame with original column names
+        ieeg_filtered = pd.DataFrame(filtered_data, columns=ieeg_bipolar.columns)
+        
+        return ieeg_filtered, ieeg_bipolar, ieeg_interictal
+
+    def _automatic_bipolar_montage(self, ieeg_interictal: pd.DataFrame) -> pd.DataFrame:
+        """
+        Creates a bipolar montage from the ieeg_interictal dataframe.
+        
+        For example, if we have channels:
+        LA01, LA02, LA03, LB01, LB02, LB03
+        
+        It will create bipolar pairs:
+        LA01-LA02, LA02-LA03
+        LB01-LB02, LB02-LB03
+        """
+        # Get array of channel names
+        channels = np.array(ieeg_interictal.columns)
+        nchan = len(channels)
+        dfBipolar = None
+        
+        # Loop through each channel except the last one
+        for ch in range(nchan - 1):
+            ch1 = channels[ch]
+            
+            # Parse the channel name into lead and contact number
+            # Example: "LA01" -> lead="LA", contact=1
+            M = re.match(r"(\D+)(\d+)", ch1)
+            if M is None:
+                # Handle special channels like "EKG" or "Cz"
+                M = re.match(r"(\D+)", ch1)
+                lead = M.group(1)
+                contact = 0
+            else:
+                lead = M.group(1)      # e.g., "LA"
+                contact = int(M.group(2))  # e.g., 1
+
+            # Create the name of the next sequential contact
+            # e.g., if ch1="LA01", then ch2="LA02"
+            ch2 = lead + f"{(contact + 1):02d}"
+
+            # If the next contact exists in our channel list
+            if ch2 in channels:
+                ch2Ind = np.where(channels == ch2)[0][0]
+                # Create bipolar channel by subtracting ch2 from ch1
+                bipolar = pd.Series(
+                    (ieeg_interictal.iloc[:, ch] - ieeg_interictal.iloc[:, ch2Ind]),
+                    name=ch1
+                )
+                
+                # Add to our results DataFrame
+                if dfBipolar is None:  # First bipolar pair
+                    dfBipolar = pd.DataFrame(bipolar)
+                else:  # Add additional bipolar pairs
+                    dfBipolar = pd.concat([dfBipolar, pd.DataFrame(bipolar)], axis=1)
+        
+        # Return results or empty DataFrame if no bipolar pairs were found
+        if dfBipolar is not None:
+            return dfBipolar
+        else:
+            return pd.DataFrame()
+
     def _clean_labels(self, channel_li):
         '''
         This function cleans a list of channels and returns the new channels
@@ -262,7 +384,7 @@ if __name__ == "__main__":
        'sub-RID0967']
     
     ieeg = IEEGClipProcessor()
-    ieeg.load_ieeg_clips('sub-RID0031')
+    ieeg_filtered, electrodes2ROI = ieeg.load_ieeg_clips('sub-RID0031')
     
     
     # Use a process pool to run in parallel
