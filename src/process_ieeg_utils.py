@@ -13,9 +13,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 from IPython import embed
-load_dotenv()
-
-BIDS_PATH = Path(os.getenv('BIDS_PATH'))
 
 #%%
 class IEEGTools:
@@ -279,7 +276,9 @@ class IEEGTools:
             Whether to create a 3D visualization (default: False)
         '''
         # get mask path
-        
+        load_dotenv()
+        BIDS_PATH = Path(os.getenv('BIDS_PATH'))
+                
         mask_path = BIDS_PATH.joinpath(subject_id, 'derivatives', 'post_to_pre', 'surgerySeg_in_preT1.nii.gz')
         if not mask_path.exists():
             raise FileNotFoundError(f"Mask file not found for subject {subject_id}")
