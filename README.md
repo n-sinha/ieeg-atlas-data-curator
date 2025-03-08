@@ -38,6 +38,9 @@ With growing interest in multi-site studies, harmonizing data across different l
 
 - What data volume is required from each site for effective integration into a normative atlas?
 - How does the choice of atlas impact harmonization and the detection of normative features?
+- How to apply harmonization to remove the site effect?
+- Release normative iEEG atlas with multiple sites integrated as a web app? (engineering)
+- What features from normative atlas are most predictive and how are they effected by site differences?
 
 ## Link to Data Directory
 
