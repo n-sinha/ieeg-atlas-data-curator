@@ -71,7 +71,12 @@ def fooof_single_series(args):
         'num_peaks': fm.n_peaks_
     }
 
-    
+def compute_entropy_single_series(series):
+    hist, bins = np.histogram(series, bins='auto', density=True)
+    probabilities = hist / np.sum(hist)
+    probabilities = probabilities[probabilities > 0]
+    H = -np.sum(probabilities * np.log2(probabilities))
+    return H
 
 # import logging
 # import os

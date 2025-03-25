@@ -6,7 +6,7 @@ import h5py
 from process_ieeg import IEEGClipProcessor
 from IPython import embed
 from pathlib import Path
-from utils import in_parallel, catch22_single_series, compute_psd_all_channels_parallel, fooof_single_series
+from utils import in_parallel, catch22_single_series, compute_psd_all_channels_parallel, fooof_single_series, compute_entropy_single_series
 from fooof import FOOOF
 import time
 
@@ -97,8 +97,14 @@ class UnivariateFeatures(IEEGClipProcessor):
             
         return pd.DataFrame(results)
 
-    #def entropy_features(self):
-    #    pass
+    def entropy_features(self):
+        def compute_entropy_for_channel(channel):
+            data = self.ieeg_processed_bipolar[channel].values
+            result = compute_entropy_single_series(data)
+            return (channel, result)
+        
+        results = in_parallel(compute_entropy_for_channel, self.ieeg_processed_bipolar.columns, verbose=True)
+        return dict(results)
 
 
 #%%
@@ -109,5 +115,5 @@ if __name__ == "__main__":
     #print(features.ieeg_processed_bipolar.columns)
     #print(features.catch22_features(features.ieeg_processed_bipolar.columns[0]))
     #print(catch22_single_series(features.ieeg_processed_bipolar[features.ieeg_processed_bipolar.columns[0]].values))
-    print(features.fooof_features().head())
+    print(features.entropy_features())
 
