@@ -239,6 +239,10 @@ class IEEGClipProcessor(IEEGTools):
             electrodes2ROI (pd.DataFrame): Electrode information
             subject_id (str): Subject ID
         """
+        # Debug prints
+        print(f"Saving processed data for {subject_id}")
+        print(f"self.ieeg_file_path: {self.ieeg_file_path}")
+        
         # Replace 'source' with 'derivatives' in the path
         file_path_parts = list(self.ieeg_file_path.parts)
         source_index = file_path_parts.index('source')
@@ -246,12 +250,11 @@ class IEEGClipProcessor(IEEGTools):
         
         # Create the derivatives directory based on the original path structure
         destination_path = Path(*file_path_parts[:-1])  # Remove the file name and its parent directory
-        destination_path.mkdir(parents=True, exist_ok=True)
-        h5_file_path = destination_path / 'interictal_ieeg_processed.h5'
+        print(f"Destination path: {destination_path}")
         
         # Check if file exists and handle accordingly
-        if h5_file_path.exists():
-            print(f"File already exists at {h5_file_path}. Will overwrite.")
+        if destination_path.exists():
+            print(f"File already exists at {destination_path}. Will overwrite.")
         
         # Calculate optimal chunk size for ieeg data (time × channels)
         # Assuming most access will be by time segments
@@ -259,7 +262,7 @@ class IEEGClipProcessor(IEEGTools):
         chunk_size = (min(10000, n_samples), min(n_channels, 32))
         
         try:
-            with h5py.File(h5_file_path, 'w') as f:
+            with h5py.File(destination_path / 'interictal_ieeg_processed.h5', 'w') as f:
                 # Create a group for this subject
                 subj_group = f.create_group('bipolar_montage')
                 
@@ -292,7 +295,7 @@ class IEEGClipProcessor(IEEGTools):
                 native_coord_mm.attrs['roiNum'] = electrodes2ROI['roiNum'].tolist()
                 native_coord_mm.attrs['spared'] = electrodes2ROI['spared'].tolist()
                 
-            print(f"Successfully saved processed iEEG data for {subject_id} to {h5_file_path}")
+            print(f"Successfully saved processed iEEG data for {subject_id} to {destination_path / 'interictal_ieeg_processed.h5'}")
         except Exception as e:
             print(f"Error saving data for {subject_id}: {str(e)}")
 
@@ -306,6 +309,8 @@ def process_subject(subject_id):
         return subject_id, True
     except Exception as e:
         print(f"Error processing {subject_id}: {str(e)}")
+        import traceback
+        traceback.print_exc() 
         return subject_id, False
 
 if __name__ == "__main__":
@@ -322,6 +327,10 @@ if __name__ == "__main__":
        'sub-RID0852', 'sub-RID0883', 'sub-RID0893', 'sub-RID0941',
        'sub-RID0967']
     
+    # ieeg = IEEGClipProcessor()
+    # print(next(ieeg.project_root.joinpath('data', 'source').rglob('sub-RID0031/**/*electrodes2ROI.csv')))
+    # print(next(ieeg.project_root.joinpath('data', 'source').rglob('sub-RID0031/**/interictal_ieeg*.h5')))
+
     # Single subject test - uncomment to test one subject first
     process_subject('sub-RID0031')
     
