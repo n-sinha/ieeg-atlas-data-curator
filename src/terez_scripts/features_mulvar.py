@@ -28,11 +28,21 @@ from joblib import Parallel, delayed
 # Try to import MNE for PDC and DTF computations
 try:
     import mne
-    from mne.connectivity import spectral_connectivity
+    from mne.connectivity import spectral_connectivity_epochs
+    import mne_connectivity
+    from mne.html_templates import _get_html_template  # check
     HAS_MNE = True
-except ImportError:
-    warnings.warn("MNE-Python not found. PDC and DTF will not be available. Install with 'pip install mne'.")
+except (ImportError, AttributeError) as e:
+    warnings.warn(f"MNE connectivity disabled: {str(e)}. Ensure MNE v1.10+ and mne-connectivity are installed.")
     HAS_MNE = False
+
+# try:
+#     import mne
+#     from mne.connectivity import spectral_connectivity
+#     HAS_MNE = True
+# except ImportError:
+#     warnings.warn("MNE-Python not found. PDC and DTF will not be available. Install with 'pip install mne'.")
+#     HAS_MNE = False
 
 logging.basicConfig(
     level=logging.INFO,
@@ -189,7 +199,8 @@ class ConnectivityFeatures:
         conn_matrix = np.zeros((n_channels, n_channels, n_bands))
         try:
             for i, (low, high) in enumerate(freq_bands):
-                con = mne.connectivity.spectral_connectivity_epochs(
+                # con = mne.connectivity.spectral_connectivity_epochs(
+                con = spectral_connectivity_epochs(
                     [data], method=method, mode='multitaper',
                     sfreq=sfreq, fmin=low, fmax=high,
                     faverage=True, mt_adaptive=True,
@@ -338,25 +349,45 @@ class ConnectivityFeatures:
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="Extract multivariate connectivity features for a subject")
+    parser = argparse.ArgumentParser(
+        description="Extract multivariate connectivity features for a subject"
+    )
     parser.add_argument("subject_id", help="Subject identifier (or path to subject folder)")
     parser.add_argument("--data-root", default="/Users/tereza/nishant/atlas/atlas_work_terez/atlas_harmonization/Data/Penn",
                         help="Root directory containing subject folders")
-    parser.add_argument("--win-size", type=float, default=1.0, help="Window size in seconds (Hamming window length)")
+    parser.add_argument("--win-size", type=float, default=1.0,
+                        help="Window size in seconds (Hamming window length)")
     parser.add_argument("--no-save", action="store_true", help="Do not save results to disk")
     parser.add_argument("--output-dir", help="Directory to save results")
-    parser.add_argument("--basic-only", action="store_true", help="Compute only basic measures (pearson, cross-correlation, plv)")
+    parser.add_argument("--basic-only", action="store_true",
+                        help="Compute only basic measures (pearson, cross-correlation, plv)")
+    # New flag to compute only directed measures (PDC and DTF)
+    parser.add_argument("--directed-only", action="store_true",
+                        help="Compute only directed connectivity measures (PDC and DTF)")
     parser.add_argument("--verify-only", action="store_true", help="Only verify existing results, skip computation")
     args = parser.parse_args()
-    
+
     if args.verify_only:
-        cf = ConnectivityFeatures(args.subject_id, args.data_root, win_size=args.win_size, output_dir=args.output_dir, compute_all=not args.basic_only)
+        cf = ConnectivityFeatures(args.subject_id, args.data_root, win_size=args.win_size,
+                                  output_dir=args.output_dir, compute_all=not args.basic_only)
         cf.verify_outputs()
         sys.exit(0)
-    
+
     try:
-        cf = ConnectivityFeatures(args.subject_id, args.data_root, win_size=args.win_size, output_dir=args.output_dir, compute_all=not args.basic_only)
-        cf.extract_features()
+        cf = ConnectivityFeatures(args.subject_id, args.data_root, win_size=args.win_size,
+                                  output_dir=args.output_dir, compute_all=not args.basic_only)
+        cf.load_data()
+        if args.directed_only:
+            # Compute only PDC and DTF
+            if HAS_MNE:
+                logger.info("Computing directed connectivity measures (PDC, DTF) only...")
+                cf.features['pdc'] = cf.compute_pdc()
+                cf.features['dtf'] = cf.compute_dtf()
+            else:
+                logger.warning("MNE-Python not available. Skipping PDC/DTF.")
+        else:
+            # Compute full set (basic features + directed measures if compute_all is True)
+            cf.extract_features()
         if not args.no_save:
             cf.save_results()
         print(f"Successfully extracted features for {args.subject_id}")
@@ -367,3 +398,36 @@ if __name__ == "__main__":
         print(f"Error processing {args.subject_id}: {e}")
         traceback.print_exc()
         sys.exit(1)
+
+# runs all methods
+# if __name__ == "__main__":
+#     import argparse
+#     parser = argparse.ArgumentParser(description="Extract multivariate connectivity features for a subject")
+#     parser.add_argument("subject_id", help="Subject identifier (or path to subject folder)")
+#     parser.add_argument("--data-root", default="/Users/tereza/nishant/atlas/atlas_work_terez/atlas_harmonization/Data/Penn",
+#                         help="Root directory containing subject folders")
+#     parser.add_argument("--win-size", type=float, default=1.0, help="Window size in seconds (Hamming window length)")
+#     parser.add_argument("--no-save", action="store_true", help="Do not save results to disk")
+#     parser.add_argument("--output-dir", help="Directory to save results")
+#     parser.add_argument("--basic-only", action="store_true", help="Compute only basic measures (pearson, cross-correlation, plv)")
+#     parser.add_argument("--verify-only", action="store_true", help="Only verify existing results, skip computation")
+#     args = parser.parse_args()
+    
+#     if args.verify_only:
+#         cf = ConnectivityFeatures(args.subject_id, args.data_root, win_size=args.win_size, output_dir=args.output_dir, compute_all=not args.basic_only)
+#         cf.verify_outputs()
+#         sys.exit(0)
+    
+#     try:
+#         cf = ConnectivityFeatures(args.subject_id, args.data_root, win_size=args.win_size, output_dir=args.output_dir, compute_all=not args.basic_only)
+#         cf.extract_features()
+#         if not args.no_save:
+#             cf.save_results()
+#         print(f"Successfully extracted features for {args.subject_id}")
+#         print("\n--- Verifying output files ---")
+#         cf.verify_outputs()
+#     except Exception as e:
+#         import traceback
+#         print(f"Error processing {args.subject_id}: {e}")
+#         traceback.print_exc()
+#         sys.exit(1)
