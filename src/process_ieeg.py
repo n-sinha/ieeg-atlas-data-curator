@@ -310,24 +310,37 @@ def process_subject(subject_id):
 
 if __name__ == "__main__":
 
-    subjects_to_find = ['sub-RID0031', 'sub-RID0032', 'sub-RID0033', 'sub-RID0050',
-       'sub-RID0051', 'sub-RID0064', 'sub-RID0089', 'sub-RID0101',
-       'sub-RID0117', 'sub-RID0143', 'sub-RID0167', 'sub-RID0175',
-       'sub-RID0179', 'sub-RID0190', 'sub-RID0193', 'sub-RID0222', 'sub-RID0238',
-       'sub-RID0267', 'sub-RID0301', 'sub-RID0320', 'sub-RID0322',
-       'sub-RID0332', 'sub-RID0381', 'sub-RID0405', 'sub-RID0412',
-       'sub-RID0424', 'sub-RID0508', 'sub-RID0562', 'sub-RID0589',
-       'sub-RID0595', 'sub-RID0621', 'sub-RID0658', 'sub-RID0675',
-       'sub-RID0679', 'sub-RID0700', 'sub-RID0785', 'sub-RID0796',
-       'sub-RID0852', 'sub-RID0883', 'sub-RID0893', 'sub-RID0941',
-       'sub-RID0967']
+    subjects_to_find = [
+        'sub-RID0102',
+        'sub-RID0139',
+        'sub-RID0194',
+        'sub-RID0213',
+        'sub-RID0278',
+        'sub-RID0309',
+        'sub-RID0365',
+        'sub-RID0420',
+        'sub-RID0440',
+        'sub-RID0454',
+        'sub-RID0459',
+        'sub-RID0476',
+        'sub-RID0502',
+        'sub-RID0520',
+        'sub-RID0522',
+        'sub-RID0529',
+        'sub-RID0536',
+        'sub-RID0566',
+        'sub-RID0583',
+        'sub-RID0596',
+        'sub-RID0646',
+        'sub-RID0652'
+    ]
     
-    # Single subject test - uncomment to test one subject first
-    process_subject('sub-RID0031')
+    # # Single subject test - uncomment to test one subject first
+    # process_subject('sub-RID0031')
     
-    # # Run parallel processing
-    # print(f"Starting parallel processing for {len(subjects_to_find)} subjects")
-    # with Pool() as pool:
-    #     results = pool.map(process_subject, subjects_to_find)
+    # Run parallel processing
+    print(f"Starting parallel processing for {len(subjects_to_find)} subjects")
+    with Pool() as pool:
+        results = pool.map(process_subject, subjects_to_find)
 
 # %%
