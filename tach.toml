@@ -1,0 +1,12 @@
+modules = []
+interfaces = []
+exclude = [
+    "**/*__pycache__",
+    "**/*egg-info",
+    "**/docs",
+    "**/tests",
+    "**/venv",
+]
+source_roots = [
+    ".", "src/tools", "src/process_ieeg_utils.py", "src/mni_csv2h5.py", "src/find_penn_patients.py", "src/process_ieeg.py", "src/get_ieeg_clips.py", "src/plot_coordinates.py",
+]
