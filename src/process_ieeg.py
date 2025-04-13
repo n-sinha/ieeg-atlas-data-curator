@@ -7,6 +7,7 @@ from pathlib import Path
 from multiprocessing import Pool
 from typing import Union, List, Tuple
 import mne
+from IPython import embed
 from scipy import signal
 from process_ieeg_utils import IEEGTools
 
@@ -26,12 +27,13 @@ class IEEGClipProcessor(IEEGTools):
             Tuple[Path, Path]: Paths to iEEG file and electrode reconstruction file
         """
         try:
-            ieeg_file_path = next(self.project_root.joinpath('data', 'source').rglob(f'{subject_id}/**/interictal_ieeg*.h5'))
-            ieeg_recon_path = next(self.project_root.joinpath('data', 'source').rglob(f'{subject_id}/**/*electrodes2ROI.csv'))
-            ieeg_recon_mni_path = next(self.project_root.joinpath('data', 'source').rglob(f'{subject_id}/**/*electrodes2ROI_mni152_corrected.csv'))
+            ieeg_file_path = next(self.project_root.joinpath('data', 'source', 'BIDS').rglob(f'{subject_id}/**/interictal_ieeg*.h5'))
+            ieeg_recon_path = next(self.project_root.joinpath('data', 'source', 'BIDS').rglob(f'{subject_id}/**/*electrodes2ROI.csv'))
+            ieeg_recon_mni_path = next(self.project_root.joinpath('data', 'source', 'BIDS').rglob(f'{subject_id}/**/*electrodes2ROI_mni152_corrected.csv'))
             self.ieeg_file_path = ieeg_file_path
             self.ieeg_recon_path = ieeg_recon_path
-            return ieeg_file_path, ieeg_recon_path
+            self.ieeg_recon_mni_path = ieeg_recon_mni_path
+            return ieeg_file_path, ieeg_recon_path, ieeg_recon_mni_path
         except StopIteration:
             raise FileNotFoundError(f"No iEEG clips found for subject {subject_id}")
     
@@ -323,7 +325,7 @@ if __name__ == "__main__":
     # ]
     
     # Single subject test - uncomment to test one subject first
-    process_subject('sub-RID0031')
+    process_subject('sub-RID0993')
     
     # Run parallel processing
     # print(f"Starting parallel processing for {len(subjects_to_find)} subjects")
