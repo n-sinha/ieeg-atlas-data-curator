@@ -8,32 +8,32 @@ import pandas as pd
 import numpy as np
 from fooof import FOOOF
 
-def setup_logging(config):
-    """Set up logging configuration"""
-    # Create results directory if it doesn't exist
-    results_dir = Path(config['paths']['results'])
-    results_dir.mkdir(parents=True, exist_ok=True)
+# def setup_logging(config):
+#     """Set up logging configuration"""
+#     # Create results directory if it doesn't exist
+#     results_dir = Path(config['paths']['results'])
+#     results_dir.mkdir(parents=True, exist_ok=True)
     
-    # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler(os.path.join(results_dir, 'pipeline.log')),
-            logging.StreamHandler()
-        ],
-        force=True
-    )
+#     # Configure logging
+#     logging.basicConfig(
+#         level=logging.INFO,
+#         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+#         handlers=[
+#             logging.FileHandler(os.path.join(results_dir, 'pipeline.log')),
+#             logging.StreamHandler()
+#         ],
+#         force=True
+#     )
 
-def validate_paths(config):
-    """Validate existence of required paths"""
-    required_paths = ['base_data', 'results']
-    for path_key in required_paths:
-        path = Path(config['paths'][path_key])
-        if not path.exists() and path_key != 'results':
-            raise FileNotFoundError(f"Required path {path_key} ({path}) does not exist")
-        elif path_key == 'results':
-            path.mkdir(parents=True, exist_ok=True)
+# def validate_paths(config):
+    # """Validate existence of required paths"""
+    # required_paths = ['base_data', 'results']
+    # for path_key in required_paths:
+    #     path = Path(config['paths'][path_key])
+    #     if not path.exists() and path_key != 'results':
+    #         raise FileNotFoundError(f"Required path {path_key} ({path}) does not exist")
+    #     elif path_key == 'results':
+    #         path.mkdir(parents=True, exist_ok=True)
 
 def in_parallel(func, data, verbose=True):
     threads = os.cpu_count()
