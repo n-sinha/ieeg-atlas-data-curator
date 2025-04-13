@@ -10,6 +10,7 @@ from io import StringIO
 from dotenv import load_dotenv
 from pathlib import Path
 from typing import Union
+from IPython import embed
 
 #%%
 class IEEGData:
