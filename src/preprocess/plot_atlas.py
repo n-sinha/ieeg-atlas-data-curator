@@ -9,6 +9,7 @@ import plotly.graph_objects as go
 from IPython import embed
 import h5py
 import nibabel as nib
+from nilearn import plotting as niplot
 from nibabel.freesurfer.io import read_annot
 from nibabel.affines import apply_affine
 from process_ieeg import IEEGClipProcessor
