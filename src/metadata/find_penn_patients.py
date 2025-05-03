@@ -123,14 +123,22 @@ class IEEGData:
             'months_at_followup_2', 'engel_class_2_pecclinical'
         ]
         metadata_redcap = metadata_redcap.filter(columns_to_keep)
-        
-        # Filter based on clinical criteria
+
+
         metadata_redcap = (metadata_redcap[
             metadata_redcap['intervention_pecclinical'].isin(['Resection', 'Laser Ablation'])]
             .dropna(subset=['engel_class_pecclinical'])
-            .loc[lambda df: df['engel_class_pecclinical'].astype(str).str.startswith(('IB','IA'))]
-            .loc[lambda df: ~df['engel_class_2_pecclinical'].astype(str).str.startswith(('II', 'III', 'IV'))]
-        )
+            .loc[lambda df: ~df['engel_class_pecclinical'].astype(str).str.startswith(('IB','IA'))]
+            .loc[lambda df: df['engel_class_2_pecclinical'].astype(str).str.startswith(('IC','ID','II', 'III', 'IV'))]
+        )  
+
+        # Filter based on clinical criteria
+        # metadata_redcap = (metadata_redcap[
+        #     metadata_redcap['intervention_pecclinical'].isin(['Resection', 'Laser Ablation'])]
+        #     .dropna(subset=['engel_class_pecclinical'])
+        #     .loc[lambda df: df['engel_class_pecclinical'].astype(str).str.startswith(('IB','IA'))]
+        #     .loc[lambda df: ~df['engel_class_2_pecclinical'].astype(str).str.startswith(('II', 'III', 'IV'))]
+        # )
         
         # Get and process metadata from Google Sheets for prior lesions in Penn metadata
         sheet_name_metadata = 'metadata'

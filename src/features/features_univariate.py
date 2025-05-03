@@ -6,7 +6,7 @@ import h5py
 from process_ieeg import IEEGClipProcessor
 from IPython import embed
 from pathlib import Path
-from features_univariate_utils import in_parallel, catch22_single_series, compute_psd_all_channels_parallel, fooof_single_series, compute_entropy_single_series
+from features.features_univariate_utils import in_parallel, catch22_single_series, compute_psd_all_channels_parallel, fooof_single_series, compute_entropy_single_series
 from fooof import FOOOF
 import time
 
@@ -93,7 +93,7 @@ class UnivariateFeatures(IEEGClipProcessor):
 if __name__ == "__main__":
     subject_id = "sub-RID0031"
     features = UnivariateFeatures(subject_id)
-    print(features.entropy_features())
+    print(features.bandpower_features())
 
 
 # %%

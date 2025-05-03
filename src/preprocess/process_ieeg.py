@@ -151,6 +151,7 @@ class IEEGClipProcessor(IEEGTools):
         electrodes2ROI = electrodes2ROI.filter(['labels','mm_x', 'mm_y', 'mm_z', 'roi', 'roiNum'])\
                                       .rename(columns={'mm_x': 'x', 'mm_y': 'y', 'mm_z': 'z'})
         
+        embed()
         # Apply mask
         electrodes2ROI = self.channels_in_mask(ieeg_coords=electrodes2ROI, subject_id=subject_id)
         
@@ -195,7 +196,7 @@ class IEEGClipProcessor(IEEGTools):
             Tuple[pd.DataFrame, pd.DataFrame]: Filtered iEEG data and electrode information
         """
         # Step 1: Find the files
-        ieeg_file_path, ieeg_recon_path = self.find_subject_files(subject_id)
+        ieeg_file_path, ieeg_recon_path, _ = self.find_subject_files(subject_id)
         
         # Step 2: Load the iEEG clips
         ieeg_data, sampling_rate = self.load_ieeg_clips(ieeg_file_path)
@@ -325,7 +326,7 @@ if __name__ == "__main__":
     # ]
     
     # Single subject test - uncomment to test one subject first
-    process_subject('sub-RID0993')
+    process_subject('sub-RID0037')
     
     # Run parallel processing
     # print(f"Starting parallel processing for {len(subjects_to_find)} subjects")
