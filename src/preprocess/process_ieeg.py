@@ -372,14 +372,13 @@ if __name__ == "__main__":
     subjects = [
         'sub-RID0596', 
         'sub-RID0194',
-        'sub-RID0502',
         'sub-RID0839',
         'sub-RID0786',
         'sub-RID0646',
         'sub-RID0825']
     
     # Single subject test - uncomment to test one subject first
-    process_subject('sub-RID0648')
+    process_subject('sub-RID0596')
     
     # # Run parallel processing
     # print(f"Starting parallel processing for {len(subjects)} subjects")
