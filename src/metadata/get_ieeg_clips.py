@@ -1,10 +1,12 @@
 #%%
 import pandas as pd
 import h5py
+import os
 import numpy as np
 from pathlib import Path
 import subprocess
 from multiprocessing import Pool
+from dotenv import load_dotenv
 from IPython import embed
 
 #%%
@@ -21,9 +23,7 @@ class IEEGClipFinder:
         project_root (Path): Path to the root directory of the project.
 
     Example:
-        >>> bids_path = Path("/path/to/bids/dataset")
-        >>> project_root = Path("/path/to/project")
-        >>> finder = IEEGClipFinder(bids_path, project_root)
+        >>> finder = IEEGClipFinder()
         >>> finder.copy_file_for_subject("sub-RID0031")
 
     Notes:
@@ -33,7 +33,7 @@ class IEEGClipFinder:
         - The class uses rsync for file copying operations
     """
 
-    def __init__(self, bids_path: Path, project_root: Path):
+    def __init__(self):
         """
         Initialize the IEEGClipFinder with paths to BIDS dataset and project root.
 
@@ -41,7 +41,12 @@ class IEEGClipFinder:
             bids_path (Path): Path to the root of the BIDS dataset directory
             project_root (Path): Path to the root directory of the project
         """
-        self.bids_path = bids_path
+        # Load environment variables from the project root
+        project_root = Path(__file__).parent.parent.parent
+        dotenv_path = project_root / '.env'
+        load_dotenv(dotenv_path=dotenv_path)
+        
+        self.bids_path = Path(os.getenv('BIDS_PATH'))
         self.project_root = project_root
 
     def find_interictal_file_with_most_clips(self, rid: str) -> tuple[Path, int]:
@@ -65,7 +70,7 @@ class IEEGClipFinder:
         """
         # Construct path to ieeg clips directory
         ieeg_clips = (self.bids_path / rid / 'derivatives' / 'ieeg-portal-clips')
-
+        
         # Find all interictal ieeg h5 files
         interictal_ieeg_clips = list(ieeg_clips.rglob('*interictal_ieeg*.h5'))
 
@@ -82,7 +87,15 @@ class IEEGClipFinder:
         # Count number of clips in each file
         for idx, (day_num, interictal_ieeg_clip) in enumerate(interictal_ieeg_clips):
             with h5py.File(interictal_ieeg_clip, 'r') as f:
-                num_clips.append(len(list(f.keys())))
+                nClips = len(list(f.keys()))
+                # read data from each key and check if the data is not all nans
+                if nClips > 0:
+                    for key in list(f.keys()):
+                        data = np.array(f[key])
+                        # check if the data are all nans
+                        if np.isnan(data).all():
+                            nClips -= 1
+                num_clips.append(nClips)
         
         # Create DataFrame and sort by number of clips
         df = pd.DataFrame({
@@ -93,70 +106,28 @@ class IEEGClipFinder:
         # Return the file path with the most clips
         clip_to_use = df['interictal_ieeg_clips'].iloc[0][1]
         num_clips = df['num_clips'].iloc[0]
-
-        return clip_to_use, num_clips
-
-    def copy_file_for_subject(self, subject_id: str):
-        """
-        Copy the interictal file with the most clips for a single subject.
         
-        This method identifies the file with the most clips using find_interictal_file_with_most_clips
-        and copies it to a destination directory using rsync. The destination path is structured as:
-        {project_root}/data/source/Penn/{subject_id}/
 
-        Args:
-            subject_id (str): Subject ID to process (e.g., 'sub-RID0031')
-
-        Notes:
-            - Creates destination directory if it doesn't exist
-            - Uses rsync for efficient file transfer
-            - Prints information about the selected file and number of clips
-        """
-        file_with_most_clips, num_clips = self.find_interictal_file_with_most_clips(subject_id)
-        print(f"Using data from: {file_with_most_clips.name} with {num_clips} clips")
-        dest_path = self.project_root / 'data' / 'source' / 'Penn' / subject_id
-        dest_path.mkdir(parents=True, exist_ok=True)
-        subprocess.run(['rsync', '-avz', str(file_with_most_clips), str(dest_path)])
-
-        ieeg_recon_files = file_with_most_clips.parent.parent.parent / 'ieeg_recon' / 'module3' / 'electrodes2ROI.csv'
-        if not ieeg_recon_files.exists():
-            raise FileNotFoundError(f"electrodes2ROI.csv file not found for subject {subject_id}")
-        dest_electrodes = dest_path / f"ieeg_recon_electrodes2ROI.csv"
-        subprocess.run(['rsync', '-avz', str(ieeg_recon_files), str(dest_electrodes)])
+        return clip_to_use, num_clips, df
 
 # %%
 
 if __name__ == "__main__":
-    project_root = Path(__file__).parent.parent
-    # Example usage
-    bids_path = Path("/Users/nishant/Dropbox/Sinha/Lab/Research/epi_t3_iEEG/data/BIDS")
-    if not bids_path.exists():
-        raise FileNotFoundError(f"BIDS path does not exist: {bids_path}")
 
-    clip_finder = IEEGClipFinder(bids_path, project_root)
-    subjects_to_find = [
-        'sub-RID0102',
-        'sub-RID0194',
-        'sub-RID0213',
-        'sub-RID0420',
-        'sub-RID0440',
-        'sub-RID0454',
-        'sub-RID0459',
-        'sub-RID0476',
-        'sub-RID0502',
-        'sub-RID0520',
-        'sub-RID0522',
-        'sub-RID0529',
-        'sub-RID0536',
-        'sub-RID0566',
-        'sub-RID0583',
-        'sub-RID0596',
-        'sub-RID0646',
-        'sub-RID0652'
-    ]
+    clip_finder = IEEGClipFinder()
+    subjects_to_find =[ 'sub-RID0037',
+                        'sub-RID0529',
+                        'sub-RID0102',
+                        'sub-RID0309',
+                        'sub-RID0534',
+                        'sub-RID0476',
+                        'sub-RID0459',
+                        'sub-RID0652',
+                        'sub-RID0583',
+                        'sub-RID0536',
+                        'sub-RID0420',
+                        'sub-RID0213']
     
-    # Use a process pool to run copies in parallel
-    with Pool() as pool:
-        pool.map(clip_finder.copy_file_for_subject, subjects_to_find)
+    clip_to_use, num_clips, df = clip_finder.find_interictal_file_with_most_clips('sub-RID0051')
 
 # %%

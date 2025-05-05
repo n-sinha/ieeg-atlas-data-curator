@@ -10,12 +10,27 @@ import mne
 from IPython import embed
 from scipy import signal
 from process_ieeg_utils import IEEGTools
+import sys
+from dotenv import load_dotenv
+import os
+
+# Add the src directory to the Python path
+sys.path.append(str(Path(__file__).parent.parent))
+from metadata.get_ieeg_clips import IEEGClipFinder
+from metadata.query_metadataPenn import MetadataPenn
 
 #%%
-class IEEGClipProcessor(IEEGTools):
+class IEEGClipProcessor(IEEGTools, IEEGClipFinder, MetadataPenn):
     def __init__(self):
-        super().__init__()
-        self.project_root = Path(__file__).parent.parent
+        IEEGTools.__init__(self)
+        IEEGClipFinder.__init__(self)
+        MetadataPenn.__init__(self)
+        
+        self.project_root = Path(__file__).parent.parent.parent
+        dotenv_path = self.project_root  / '.env'
+        load_dotenv(dotenv_path=dotenv_path)
+        
+        self.bids_path = Path(os.getenv('BIDS_PATH'))
 
     def find_subject_files(self, subject_id: str) -> Tuple[Path, Path]:
         """Find H5 and electrode reconstruction files for a subject.
@@ -27,9 +42,9 @@ class IEEGClipProcessor(IEEGTools):
             Tuple[Path, Path]: Paths to iEEG file and electrode reconstruction file
         """
         try:
-            ieeg_file_path = next(self.project_root.joinpath('data', 'source', 'BIDS').rglob(f'{subject_id}/**/interictal_ieeg*.h5'))
-            ieeg_recon_path = next(self.project_root.joinpath('data', 'source', 'BIDS').rglob(f'{subject_id}/**/*electrodes2ROI.csv'))
-            ieeg_recon_mni_path = next(self.project_root.joinpath('data', 'source', 'BIDS').rglob(f'{subject_id}/**/*electrodes2ROI_mni152_corrected.csv'))
+            ieeg_file_path,_,_ = self.find_interictal_file_with_most_clips(subject_id)
+            ieeg_recon_path = next(self.bids_path.rglob(f'{subject_id}/**/*electrodes2ROI.csv'))
+            ieeg_recon_mni_path = next(self.bids_path.rglob(f'{subject_id}/**/*electrodes2ROI_mni152_corrected.csv'))
             self.ieeg_file_path = ieeg_file_path
             self.ieeg_recon_path = ieeg_recon_path
             self.ieeg_recon_mni_path = ieeg_recon_mni_path
@@ -56,7 +71,7 @@ class IEEGClipProcessor(IEEGTools):
                 sampling_rate = clip.attrs.get('sampling_rate')
                 ieeg_clip = pd.DataFrame(clip, columns=clip.attrs.get('channels_labels'))
                 ieeg = pd.concat([ieeg, ieeg_clip], axis=0)
-        
+
         return ieeg.reset_index(drop=True), sampling_rate
     
     def prepare_electrodes_and_ieeg(self, ieeg_data: pd.DataFrame, electrodes_file_path: Path) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -104,6 +119,10 @@ class IEEGClipProcessor(IEEGTools):
         Returns:
             Tuple[pd.DataFrame, pd.DataFrame]: iEEG and electrodes with bad channels removed
         """
+
+        # if any row in ieeg_data is nan remove that row across all columns
+        ieeg_data = ieeg_data[~ieeg_data.isna().any(axis=1)]
+        
         # Identify bad channels
         bad_channels, details = self.identify_bad_channels(ieeg_data.values, sampling_rate)
         
@@ -141,6 +160,7 @@ class IEEGClipProcessor(IEEGTools):
         Returns:
             pd.DataFrame: Finalized electrode information
         """
+
         # Remove channels not in ieeg_filtered
         electrodes2ROI = electrodes2ROI[electrodes2ROI.index.isin(ieeg_filtered.columns)]
         
@@ -151,9 +171,18 @@ class IEEGClipProcessor(IEEGTools):
         electrodes2ROI = electrodes2ROI.filter(['labels','mm_x', 'mm_y', 'mm_z', 'roi', 'roiNum'])\
                                       .rename(columns={'mm_x': 'x', 'mm_y': 'y', 'mm_z': 'z'})
         
-        embed()
-        # Apply mask
-        electrodes2ROI = self.channels_in_mask(ieeg_coords=electrodes2ROI, subject_id=subject_id)
+        # check if the patient has a surgery mask
+        metadata = self.query_metadata(subject_id)
+
+        if metadata['surgery_mask']:
+            # Apply mask
+            electrodes2ROI = self.channels_in_mask(ieeg_coords=electrodes2ROI, subject_id=subject_id)
+        else:
+            # use soz electrodes as mask
+            # Split the SOZ electrodes string into a list
+            soz_electrodes = [e.strip() for e in metadata['SOZ electrode'].split(',')]
+            soz_electrodes_clean = self.clean_labels(soz_electrodes)
+            electrodes2ROI['soz'] = electrodes2ROI.index.isin(soz_electrodes_clean)
         
         return electrodes2ROI
     
@@ -183,78 +212,23 @@ class IEEGClipProcessor(IEEGTools):
             duration=10,
             start=0
         )
-
-    def process_raw_ieeg(self, subject_id: str, plotEEG: bool = False, saveEEG: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        """
-        Process iEEG data for a subject from raw to filtered data with electrode information.
-        
-        Args:
-            subject_id (str): Subject ID to load data for
-            plotEEG (bool, optional): Whether to plot the EEG data. Defaults to False.
-            
-        Returns:
-            Tuple[pd.DataFrame, pd.DataFrame]: Filtered iEEG data and electrode information
-        """
-        # Step 1: Find the files
-        ieeg_file_path, ieeg_recon_path, _ = self.find_subject_files(subject_id)
-        
-        # Step 2: Load the iEEG clips
-        ieeg_data, sampling_rate = self.load_ieeg_clips(ieeg_file_path)
-        
-        # Step 3: Prepare electrodes and iEEG data
-        ieeg_data, electrodes2ROI = self.prepare_electrodes_and_ieeg(ieeg_data, ieeg_recon_path)
-        
-        # Step 4: Remove bad channels
-        ieeg_data, electrodes2ROI = self.remove_bad_channels(ieeg_data, electrodes2ROI, sampling_rate)
-        
-        # Step 5: Process the iEEG signal (bipolar montage and filtering)
-        ieeg_filtered = self.process_ieeg_signal(ieeg_data, sampling_rate)
-        
-        # Step 6: Finalize the electrodes data
-        electrodes2ROI = self.finalize_electrodes(electrodes2ROI, ieeg_filtered, subject_id)
-        
-        # Step 7: Final alignment of iEEG and electrodes
-        ieeg_filtered = ieeg_filtered.loc[:, electrodes2ROI.index]
-
-        # Step 8: Sort data by channel labels and columns
-        electrodes2ROI = electrodes2ROI.sort_index()
-        ieeg_filtered = ieeg_filtered.sort_index(axis=1)
-        
-        # Verify alignment
-        if not np.array_equal(electrodes2ROI.index, ieeg_filtered.columns):
-            raise ValueError(f"Electrodes2ROI and ieeg_filtered do not have the same channels for subject {subject_id}")
-        
-        # Optional: Plot the EEG data
-        if plotEEG:
-            self.plot_eeg_data(ieeg_filtered, sampling_rate)
-
-        if saveEEG:
-            self.save_ieeg_processed(ieeg_filtered, sampling_rate, electrodes2ROI, subject_id)
-
-        return ieeg_filtered, electrodes2ROI
     
-    def save_ieeg_processed(self, ieeg_filtered: pd.DataFrame, sampling_rate: float, electrodes2ROI: pd.DataFrame, subject_id: str) -> None:
+    def save_ieeg_processed(self, save_path: Path, ieeg_filtered: pd.DataFrame, sampling_rate: float, electrodes2ROI: pd.DataFrame, subject_id: str) -> None:
         """Save the processed iEEG data and electrode information to a CSV file.
         
         Args:
+            save_path (Path): Path to save the processed iEEG data
             ieeg_filtered (pd.DataFrame): Filtered iEEG data
             sampling_rate (float): Sampling rate of the data
             electrodes2ROI (pd.DataFrame): Electrode information
             subject_id (str): Subject ID
         """
-        # Replace 'source' with 'derivatives' in the path
-        file_path_parts = list(self.ieeg_file_path.parts)
-        source_index = file_path_parts.index('source')
-        file_path_parts[source_index] = 'derivatives'
-        
-        # Create the derivatives directory based on the original path structure
-        destination_path = Path(*file_path_parts[:-1])  # Remove the file name and its parent directory
-        destination_path.mkdir(parents=True, exist_ok=True)
-        h5_file_path = destination_path / 'interictal_ieeg_processed.h5'
-        
+
+        h5_file_path = save_path / 'interictal_ieeg_processed.h5'
         # Check if file exists and handle accordingly
         if h5_file_path.exists():
             print(f"File already exists at {h5_file_path}. Will overwrite.")
+            os.remove(h5_file_path)
         
         # Calculate optimal chunk size for ieeg data (time × channels)
         # Assuming most access will be by time segments
@@ -293,18 +267,89 @@ class IEEGClipProcessor(IEEGTools):
                 native_coord_mm.attrs['original_labels'] = electrodes2ROI['labels'].tolist()
                 native_coord_mm.attrs['roi'] = electrodes2ROI['roi'].tolist()
                 native_coord_mm.attrs['roiNum'] = electrodes2ROI['roiNum'].tolist()
-                native_coord_mm.attrs['spared'] = electrodes2ROI['spared'].tolist()
+                if 'spared' in electrodes2ROI.columns:
+                    native_coord_mm.attrs['spared'] = electrodes2ROI['spared'].tolist()
+                elif 'soz' in electrodes2ROI.columns:
+                    native_coord_mm.attrs['soz'] = electrodes2ROI['soz'].tolist()
+                else:
+                    native_coord_mm.attrs['spared_or_soz'] = 'not_available'
                 
             print(f"Successfully saved processed iEEG data for {subject_id} to {h5_file_path}")
         except Exception as e:
             print(f"Error saving data for {subject_id}: {str(e)}")
+
+    def process_raw_ieeg(self, subject_id: str, plotEEG: bool = False, saveEEG: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        """
+        Process iEEG data for a subject from raw to filtered data with electrode information.
+        
+        Args:
+            subject_id (str): Subject ID to load data for
+            plotEEG (bool, optional): Whether to plot the EEG data. Defaults to False.
+            
+        Returns:
+            Tuple[pd.DataFrame, pd.DataFrame]: Filtered iEEG data and electrode information
+        """
+        print(f"Processing {subject_id}...")
+        
+        # Step 1: Find the files
+        print("Step 1: Finding subject files")
+        ieeg_file_path, ieeg_recon_path, _ = self.find_subject_files(subject_id)
+        
+        # Step 2: Load the iEEG clips
+        print("Step 2: Loading iEEG clips")
+        ieeg_data, sampling_rate = self.load_ieeg_clips(ieeg_file_path)
+        
+        # Step 3: Prepare electrodes and iEEG data
+        print("Step 3: Preparing electrodes and iEEG data")
+        ieeg_data, electrodes2ROI = self.prepare_electrodes_and_ieeg(ieeg_data, ieeg_recon_path)
+        
+        # Step 4: Remove bad channels
+        print("Step 4: Removing bad channels")
+        ieeg_data, electrodes2ROI = self.remove_bad_channels(ieeg_data, electrodes2ROI, sampling_rate)
+        
+        # Step 5: Process the iEEG signal (bipolar montage and filtering)
+        print("Step 5: Processing iEEG signal")
+        ieeg_filtered = self.process_ieeg_signal(ieeg_data, sampling_rate)
+      
+        # Step 6: Finalize the electrodes data
+        print("Step 6: Finalizing electrode data")
+        electrodes2ROI = self.finalize_electrodes(electrodes2ROI, ieeg_filtered, subject_id)
+        
+        # Step 7: Final alignment of iEEG and electrodes
+        print("Step 7: Aligning iEEG and electrodes")
+        ieeg_filtered = ieeg_filtered.loc[:, electrodes2ROI.index]
+
+        # Step 8: Sort data by channel labels and columns
+        print("Step 8: Sorting data")
+        electrodes2ROI = electrodes2ROI.sort_index()
+        ieeg_filtered = ieeg_filtered.sort_index(axis=1)
+        
+        # Verify alignment
+        if not np.array_equal(electrodes2ROI.index, ieeg_filtered.columns):
+            raise ValueError(f"Electrodes2ROI and ieeg_filtered do not have the same channels for subject {subject_id}")
+        
+        # Optional: Plot the EEG data
+        if plotEEG:
+            print("Plotting EEG data")
+            self.plot_eeg_data(ieeg_filtered, sampling_rate)
+
+        if saveEEG:
+            print("Saving processed iEEG data")
+            save_path = self.project_root / 'data' / 'derivatives' / f'{subject_id}'
+            save_path.mkdir(parents=True, exist_ok=True)
+            self.save_ieeg_processed(save_path, ieeg_filtered, sampling_rate, electrodes2ROI, subject_id)
+
+        print(f"Completed processing {subject_id}")
+        
+        return ieeg_filtered, electrodes2ROI
+    
 
 # Define the function outside the if __name__ == "__main__" block
 def process_subject(subject_id):
     try:
         print(f"Processing {subject_id}...")
         ieeg = IEEGClipProcessor()
-        ieeg_filtered, electrodes2ROI = ieeg.process_raw_ieeg(subject_id, saveEEG=True)
+        ieeg.process_raw_ieeg(subject_id, saveEEG=True)
         print(f"Completed processing {subject_id}")
         return subject_id, True
     except Exception as e:
