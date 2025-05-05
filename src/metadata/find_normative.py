@@ -16,7 +16,7 @@ from IPython import embed
 class IEEGData:
     def __init__(self):
         """Initialize the IEEGData class."""
-        self.root_dir = Path(__file__).parent.parent
+        self.root_dir = Path(__file__).parent.parent.parent
         self.env_path = self.root_dir / '.env'
         load_dotenv(dotenv_path=self.env_path)
         
