@@ -177,28 +177,14 @@ class MetadataPenn:
 if __name__ == "__main__":
     ieeg = MetadataPenn()
     manual_validation_soz = ieeg.get_manual_validation_soz()
-    subjects = ['sub-RID0037',
-        'sub-RID0529',
-        'sub-RID0102',
-        'sub-RID0309',
-        'sub-RID0534',
-        'sub-RID0476',
-        'sub-RID0459',
-        'sub-RID0652',
-        'sub-RID0583',
-        'sub-RID0536',
-        'sub-RID0420',
-        'sub-RID0213',
-        'sub-RID0490',
-        'sub-RID0572',]
-        # 'sub-RID0194',
-        # 'sub-RID0502',
-        # 'sub-RID0839',
-        # 'sub-RID0786',
-        # 'sub-RID0596',
-        # 'sub-RID0646',
-        # 'sub-RID0825',
-        # 'sub-RID0648']
+    subjects = [
+        'sub-RID0596', 
+        'sub-RID0194',
+        'sub-RID0502',
+        'sub-RID0839',
+        'sub-RID0786',
+        'sub-RID0646',
+        'sub-RID0825']
     
     metadata_list = []
     for subject in subjects:

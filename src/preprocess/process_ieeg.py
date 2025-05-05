@@ -42,7 +42,11 @@ class IEEGClipProcessor(IEEGTools, IEEGClipFinder, MetadataPenn):
             Tuple[Path, Path]: Paths to iEEG file and electrode reconstruction file
         """
         try:
-            ieeg_file_path,_,_ = self.find_interictal_file_with_most_clips(subject_id)
+            ieeg_file_path,_,ieeg_file_path_all = self.find_interictal_file_with_most_clips(subject_id)
+            
+            # to select a specific clip
+            ieeg_file_path = ieeg_file_path_all['interictal_ieeg_clips'][2][1] 
+
             ieeg_recon_path = next(self.bids_path.rglob(f'{subject_id}/**/*electrodes2ROI.csv'))
             ieeg_recon_mni_path = next(self.bids_path.rglob(f'{subject_id}/**/*electrodes2ROI_mni152_corrected.csv'))
             self.ieeg_file_path = ieeg_file_path
@@ -84,15 +88,17 @@ class IEEGClipProcessor(IEEGTools, IEEGClipFinder, MetadataPenn):
         Returns:
             Tuple[pd.DataFrame, pd.DataFrame]: Filtered iEEG data and electrode reconstruction
         """
+
         # Load electrodes data
         electrodes2ROI = pd.read_csv(electrodes_file_path).set_index('labels')
-        
+
         # Clean labels
         ieeg_data.columns = self.clean_labels(ieeg_data.columns)
         electrodes2ROI['clean_labels'] = self.clean_labels(electrodes2ROI.index)
         
         # Find common channels
         keep_channels = list(set(ieeg_data.columns) & set(electrodes2ROI['clean_labels']))
+        keep_channels = sorted(keep_channels)
         
         if not keep_channels:
             raise ValueError(f"No common channels found between ieeg_data and electrodes2ROI")
@@ -101,7 +107,7 @@ class IEEGClipProcessor(IEEGTools, IEEGClipFinder, MetadataPenn):
         electrodes2ROI = electrodes2ROI[electrodes2ROI['clean_labels'].isin(keep_channels)]
         electrodes2ROI = electrodes2ROI.reset_index().set_index('clean_labels')
         ieeg_data = ieeg_data.loc[:, keep_channels]
-        
+
         # Reorder electrodes to match ieeg_data
         electrodes2ROI = electrodes2ROI.loc[ieeg_data.columns]
         
@@ -122,12 +128,15 @@ class IEEGClipProcessor(IEEGTools, IEEGClipFinder, MetadataPenn):
 
         # if any row in ieeg_data is nan remove that row across all columns
         ieeg_data = ieeg_data[~ieeg_data.isna().any(axis=1)]
-        
         # Identify bad channels
         bad_channels, details = self.identify_bad_channels(ieeg_data.values, sampling_rate)
-        
+
         # Remove bad channels
         good_channels = ~bad_channels
+
+        print(f"Number of bad channels: {bad_channels.sum()}")
+        print(f"Number of good channels: {good_channels.sum()}")
+
         ieeg_data = ieeg_data.iloc[:, good_channels]
         electrodes2ROI = electrodes2ROI.iloc[good_channels]
         
@@ -143,6 +152,8 @@ class IEEGClipProcessor(IEEGTools, IEEGClipFinder, MetadataPenn):
         Returns:
             pd.DataFrame: Processed iEEG data
         """
+
+        
         ieeg_bipolar = self.automatic_bipolar_montage(ieeg_data)
         ieeg_filtered = self.filter_ieeg(ieeg_interictal=ieeg_bipolar, sampling_rate=sampling_rate)
         
@@ -177,7 +188,7 @@ class IEEGClipProcessor(IEEGTools, IEEGClipFinder, MetadataPenn):
         if metadata['surgery_mask']:
             # Apply mask
             electrodes2ROI = self.channels_in_mask(ieeg_coords=electrodes2ROI, subject_id=subject_id)
-        else:
+        elif metadata['SOZ electrode'] is not None and metadata['SOZ electrode'] != '':
             # use soz electrodes as mask
             # Split the SOZ electrodes string into a list
             soz_electrodes = [e.strip() for e in metadata['SOZ electrode'].split(',')]
@@ -358,24 +369,21 @@ def process_subject(subject_id):
 
 if __name__ == "__main__":
 
-    # subjects_to_find = [
-    #     'sub-RID0031', 'sub-RID0032', 'sub-RID0033', 'sub-RID0050', 'sub-RID0051',
-    #     'sub-RID0064', 'sub-RID0089', 'sub-RID0101', 'sub-RID0117', 'sub-RID0143',
-    #     'sub-RID0167', 'sub-RID0175', 'sub-RID0179', 'sub-RID0190', 'sub-RID0193',
-    #     'sub-RID0222', 'sub-RID0238', 'sub-RID0267', 'sub-RID0301', 'sub-RID0320',
-    #     'sub-RID0322', 'sub-RID0332', 'sub-RID0381', 'sub-RID0405', 'sub-RID0412',
-    #     'sub-RID0424', 'sub-RID0508', 'sub-RID0562', 'sub-RID0589', 'sub-RID0595',
-    #     'sub-RID0621', 'sub-RID0658', 'sub-RID0675', 'sub-RID0679', 'sub-RID0700',
-    #     'sub-RID0785', 'sub-RID0796', 'sub-RID0852', 'sub-RID0883', 'sub-RID0893',
-    #     'sub-RID0941', 'sub-RID0967'
-    # ]
+    subjects = [
+        'sub-RID0596', 
+        'sub-RID0194',
+        'sub-RID0502',
+        'sub-RID0839',
+        'sub-RID0786',
+        'sub-RID0646',
+        'sub-RID0825']
     
     # Single subject test - uncomment to test one subject first
-    process_subject('sub-RID0037')
+    process_subject('sub-RID0648')
     
-    # Run parallel processing
-    # print(f"Starting parallel processing for {len(subjects_to_find)} subjects")
+    # # Run parallel processing
+    # print(f"Starting parallel processing for {len(subjects)} subjects")
     # with Pool() as pool:
-    #     results = pool.map(process_subject, subjects_to_find)
+    #     results = pool.map(process_subject, subjects)
 
 # %%
