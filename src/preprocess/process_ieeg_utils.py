@@ -306,7 +306,9 @@ class IEEGTools:
                                     marker=dict(size=5, 
                                               color=ieeg_coords['spared'].astype(int),
                                               colorscale=[[0, 'red'], [1, 'blue']])))  # Custom binary colorscale
-            fig.show()        
+            fig.show()
+
+        embed()        
         return ieeg_coords
 
 if __name__ == "__main__":
