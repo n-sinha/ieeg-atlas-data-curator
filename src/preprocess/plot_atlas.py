@@ -236,10 +236,11 @@ class ProcessSites(IEEGClipProcessor):
 #%% 
 
 if __name__ == '__main__':
-    project_root = Path(__file__).parent.parent
+    project_root = Path(__file__).parent.parent.parent
     atlas = Path(project_root, 'data', 'subjects', 'cvs_avg35_inMNI152', 'mri', 'aparc+aseg.mgz')
     atlas_lut = Path(project_root, 'data', 'subjects', 'atlas_lookuptable', 'desikanKilliany.csv')
     epoch = 'interictal_ieeg_processed.h5'
+
 
     site_name = 'MNI'
     mni = ProcessSites(site_name, atlas, atlas_lut)

@@ -44,11 +44,12 @@ class IEEGClipProcessor(IEEGTools, IEEGClipFinder, MetadataPenn):
         try:
             ieeg_file_path,_,ieeg_file_path_all = self.find_interictal_file_with_most_clips(subject_id)
             
-            # to select a specific clip
-            ieeg_file_path = ieeg_file_path_all['interictal_ieeg_clips'][2][1] 
+            # # to select a specific clip
+            # ieeg_file_path = ieeg_file_path_all['interictal_ieeg_clips'][1][1]
+            # embed()
 
             ieeg_recon_path = next(self.bids_path.rglob(f'{subject_id}/**/*electrodes2ROI.csv'))
-            ieeg_recon_mni_path = next(self.bids_path.rglob(f'{subject_id}/**/*electrodes2ROI_mni152_corrected.csv'))
+            ieeg_recon_mni_path = next(self.bids_path.rglob(f'{subject_id}/**/*electrodes2ROI_mni.csv'))
             self.ieeg_file_path = ieeg_file_path
             self.ieeg_recon_path = ieeg_recon_path
             self.ieeg_recon_mni_path = ieeg_recon_mni_path
@@ -187,8 +188,8 @@ class IEEGClipProcessor(IEEGTools, IEEGClipFinder, MetadataPenn):
 
         if metadata['surgery_mask']:
             # Apply mask
-            electrodes2ROI = self.channels_in_mask(ieeg_coords=electrodes2ROI, subject_id=subject_id)
-        elif metadata['SOZ electrode'] is not None and metadata['SOZ electrode'] != '':
+            electrodes2ROI = self.channels_in_mask(ieeg_coords=electrodes2ROI, subject_id=subject_id, plot=True)
+        elif metadata['SOZ electrode'] is not None and metadata['SOZ electrode'] != '' and not pd.isna(metadata['SOZ electrode']):
             # use soz electrodes as mask
             # Split the SOZ electrodes string into a list
             soz_electrodes = [e.strip() for e in metadata['SOZ electrode'].split(',')]
@@ -355,7 +356,7 @@ class IEEGClipProcessor(IEEGTools, IEEGClipFinder, MetadataPenn):
         return ieeg_filtered, electrodes2ROI
     
 
-# Define the function outside the if __name__ == "__main__" block
+#%% Define the function outside the if __name__ == "__main__" block
 def process_subject(subject_id):
     try:
         print(f"Processing {subject_id}...")
@@ -370,15 +371,13 @@ def process_subject(subject_id):
 if __name__ == "__main__":
 
     subjects = [
-        'sub-RID0596', 
-        'sub-RID0194',
-        'sub-RID0839',
-        'sub-RID0786',
-        'sub-RID0646',
-        'sub-RID0825']
+        'sub-RID0175',
+        'sub-RID0222',
+        'sub-RID0301',
+        'sub-RID0658']
     
     # Single subject test - uncomment to test one subject first
-    process_subject('sub-RID0596')
+    process_subject('sub-RID0222')
     
     # # Run parallel processing
     # print(f"Starting parallel processing for {len(subjects)} subjects")
