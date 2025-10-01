@@ -1,0 +1,19 @@
+[project]
+name = "ieeg-atlas-data-curator"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "edfio>=0.4.9",
+    "ipykernel>=6.30.1",
+    "ipython>=9.4.0",
+    "matplotlib>=3.10.5",
+    "mne-qt-browser>=0.7.2",
+    "mne[hdf5]>=1.10.1",
+    "neuroconv[edf]>=0.7.5",
+    "neurosift>=0.2.13",
+    "openpyxl>=3.1.5",
+    "pyqt6>=6.9.1",
+    "typer>=0.19.2",
+]
