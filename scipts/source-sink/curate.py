@@ -30,8 +30,6 @@ def main(
     normative_patients = read_metadata(input_dir)
     logging.info(f"Found {len(normative_patients)} normative patients from {normative_patients['clinical_center'].unique()}")
 
-    copy_data(input_dir, output_dir, normative_patients)
-
   
 
 #%%

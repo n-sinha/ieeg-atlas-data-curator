@@ -3,8 +3,7 @@ import pandas as pd
 import typer
 from pathlib import Path
 import logging
-import shutil
-import json
+import subprocess
 
 logging.basicConfig(
     level=logging.INFO,
@@ -12,69 +11,85 @@ logging.basicConfig(
 )
 
 #%%
+def curate_ram(channel_metadata: pd.DataFrame):
 
-def text_to_dict(input_dir: Path):
-    logging.info(f"Processing {input_dir}")
-    
-    # Find the file
-    if input_dir.is_file():
-        file_path = input_dir
-    else:
-        txt_files = list(input_dir.glob("*electrode_categories*.txt"))
-        if not txt_files:
-            return pd.DataFrame()
-        file_path = txt_files[0]
-    
-    # Read and parse
-    with open(file_path, "r") as f:
-        lines = [line.strip() for line in f.readlines() if line.strip()]
-    
-    patient_id = lines[0]
-    electrode_categories = {}
-    current_category = None
-    
-    for line in lines[1:]:
-        # Category headers have spaces, colons, or are long
-        if ' ' in line or ':' in line or len(line) > 10:
-            current_category = line
-            electrode_categories[current_category] = []
-        # Filter out non-channel descriptors (like 'interictal' which means interictal spike)
-        elif current_category and line.lower() not in ['-', 'none', 'n/a', 'interictal']:
-            electrode_categories[current_category].append(line)
+    # remove patients that have all of these columns empty
+    channel_metadata = channel_metadata[channel_metadata['Seizure Onset Zone'].notna() | 
+                                        channel_metadata['Interictal Spikes'].notna() | 
+                                        channel_metadata['Bad Electrodes'].notna() | 
+                                        channel_metadata['Brain Lesions'].notna() | 
+                                        channel_metadata['Early Spread'].notna()]
 
-    # get keys and values from electrode_categories
-    keys = electrode_categories.keys()
-    values = electrode_categories.values()
-    return keys, values, patient_id
+    # remove patient where seizure onset zone is empty
+    channel_metadata = channel_metadata[channel_metadata['Seizure Onset Zone'].notna()]
+
+    # make a copy of patient_id as a new column and replace everything after _ with an empty string
+    channel_metadata['ram_id'] = 'sub-' + channel_metadata['patient_id'].str.split('_').str[0]
+
+    # make clean patient id the index
+    channel_metadata = channel_metadata.set_index('ram_id')
+
+    # Add a new columun as site which will have the last letter of the ram_id
+    channel_metadata['site'] = channel_metadata.index.str[-1]
+
+    # remove patients that are from site "P" which are Penn patients
+    channel_metadata = channel_metadata[channel_metadata['site'] != 'P']
+
+    return channel_metadata
+
+def download_ram_release(ram_input_dir: Path, dataset_id: str ):
+
+    # create a new directory for the dataset
+    dataset_dir = ram_input_dir / dataset_id
+    dataset_dir.mkdir(parents=True, exist_ok=True)
+
+    # download the data from openneuro
+    subprocess.run(["git", "clone", f"https://github.com/OpenNeuroDatasets/{dataset_id}.git", dataset_dir.absolute()], check=True)
+    # make a list of all patients in this dataset which starts with sub-
+
+    patients_paths = [patient for patient in dataset_dir.glob('sub-*') if patient.is_dir()]
+
+    return patients_paths
+
+def curate_ram_patients(patients_paths: list[Path], channel_metadata: pd.DataFrame):
+
+    patients_paths_all = [patient.name for  patient in patients_paths]
+
+    patients_with_metadata =  channel_metadata.index.unique().tolist()
+
+    # for each patient in patients_with_metadata check if there is patient.name in patient path
+    patients_paths_atlas = []
+    for patient in patients_with_metadata:
+        if patient in patients_paths_all:
+            patients_paths_atlas.append(patients_paths[patients_paths_all.index(patient)])
+
+    return patients_paths_atlas
 
 def main():
 
-    data_dir = Path(__file__).parent.parent.parent / "data" / "input" / "ram"
-    release_2016 = data_dir / "Release_Metadata_20160930" / "electrode_categories"
-    release_2017 = data_dir / "Release_Metadata_20171010" / "electrode_categories"
-    release_2018 = data_dir / "Release_Metadata_20180528" / "electrode_categories"
+    ram_input_dir = Path(__file__).parent.parent.parent / "data" / "input" / "ram"
+    ram_output_dir = Path(__file__).parent.parent.parent / "data" / "output" / "ram"
+    channel_metadata_file = ram_output_dir / "channel_metadata.csv"
+    channel_metadata = pd.read_csv(channel_metadata_file)
 
-    subjects_2016 = release_2016.glob("*")
-    subjects_2017 = release_2017.glob("*")
-    subjects_2018 = release_2018.glob("*")
+    channel_metadata = curate_ram(channel_metadata)
 
-    # keep only the files that start with R
-    subjects_2016 = [subject for subject in subjects_2016 if subject.name.startswith("R")]
-    subjects_2017 = [subject for subject in subjects_2017 if subject.name.startswith("R")]
-    subjects_2018 = [subject for subject in subjects_2018 if subject.name.startswith("R")]
+    # clone data from openneuro
+    ram_datasets = pd.read_csv(ram_input_dir / "openneuro_release.csv")['dataset_id'].tolist()
 
-    output_dir = data_dir.parent.parent / "output" / "ram"
-    if output_dir.exists():
-        shutil.rmtree(output_dir)  # Remove directory and all contents
-    output_dir.mkdir(parents=True)  # Create empty directory
+    patients_paths = []
 
-    for subject in list(subjects_2016) + list(subjects_2017) + list(subjects_2018):
-        keys, values, patient_id = text_to_dict(subject)
-        # create a dictionary
-        dictionary = {key: value for key, value in zip(keys, values)}
-        with open(output_dir / f"sub-{patient_id}.json", "w") as f:
-            json.dump(dictionary, f, indent=4)
-  
+    # download the data from openneuro
+    for dataset_id in ram_datasets:
+        patients_paths_dataset = download_ram_release(ram_input_dir, dataset_id)
+        patients_paths.extend(patients_paths_dataset) 
+
+    # curate the patients
+    patients_path_atlas = curate_ram_patients(patients_paths, channel_metadata)
+
+    # save the patients paths to a csv file
+    pd.DataFrame(patients_path_atlas, columns=['patient_path']).to_csv(ram_output_dir / "patients_paths_atlas.csv", index=False)
+    
 
 #%%
 if __name__ == "__main__":
