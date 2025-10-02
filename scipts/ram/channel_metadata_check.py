@@ -1,6 +1,7 @@
 import pandas as pd
 from pathlib import Path
 import re
+from collections import defaultdict
 
 data_dir = Path(__file__).parent.parent.parent / "data"
 input_dirs = [
@@ -8,9 +9,8 @@ input_dirs = [
     data_dir / "input" / "ram" / "Release_Metadata_20171010" / "electrode_categories",
     data_dir / "input" / "ram" / "Release_Metadata_20180528" / "electrode_categories",
 ]
-output_file = data_dir / "output" / "ram" / "channel_metadata.csv"
+output_file = data_dir / "output" / "ram" / "channel_metadata_audit.txt"
 
-# Known valid category names (normalized)
 VALID_CATEGORIES = {
     'seizure onset zone': 'Seizure Onset Zone',
     'seizure onset zones': 'Seizure Onset Zone',
@@ -38,16 +38,22 @@ def is_valid_patient_id(text):
 def is_note_separator(line):
     return line.startswith('***') or line.startswith('**') or line.startswith('--')
 
+def is_electrode_name(line):
+    return bool(re.match(r'^[A-Za-z0-9_/\-]+\d+[A-Za-z0-9_/\-]*$', line, re.IGNORECASE))
+
 def normalize_category(category):
     category_lower = category.lower().strip().rstrip(':').strip()
-    return VALID_CATEGORIES.get(category_lower, None)
+    return category_lower
+
+mapped_categories = defaultdict(int)
+ignored_categories = defaultdict(int)
+all_raw_categories = defaultdict(int)
 
 txt_files = []
 for input_dir in input_dirs:
     if input_dir.exists():
         txt_files.extend([f for f in input_dir.glob("*.txt") if not f.name.startswith('.')])
 
-rows = []
 for file_path in sorted(txt_files):
     with open(file_path, "r", encoding='utf-8', errors='ignore') as f:
         lines = [line.strip() for line in f.readlines() if line.strip()]
@@ -60,37 +66,58 @@ for file_path in sorted(txt_files):
     if not is_valid_patient_id(patient_id):
         continue
     
-    row = {'patient_id': patient_id}
-    current_category = None
-    
     for line in lines[1:]:
         line = line.rstrip('%').strip()
         
         if is_note_separator(line):
             break
         
+        if line.lower() in ['-', 'none', 'n/a', 'interictal', '']:
+            continue
+        
+        if is_electrode_name(line):
+            continue
+        
         normalized = normalize_category(line)
-        if normalized:
-            current_category = normalized
-            if current_category not in row:
-                row[current_category] = []
-        elif current_category and line.lower() not in ['-', 'none', 'n/a', 'interictal', '']:
-            if re.match(r'^[A-Za-z0-9_/\-]+\d+[A-Za-z0-9_/\-]*$', line, re.IGNORECASE):
-                row[current_category].append(line)
+        all_raw_categories[line] += 1
+        
+        if normalized in VALID_CATEGORIES:
+            mapped_target = VALID_CATEGORIES[normalized]
+            mapped_categories[f"{line} -> {mapped_target}"] += 1
+        else:
+            ignored_categories[line] += 1
+
+with open(output_file, "w") as f:
+    f.write("="*80 + "\n")
+    f.write("CATEGORY AUDIT REPORT\n")
+    f.write("="*80 + "\n\n")
     
-    for key in row:
-        if isinstance(row[key], list):
-            row[key] = ', '.join(row[key]) if row[key] else ''
+    f.write(f"Total text files processed: {len(txt_files)}\n\n")
     
-    rows.append(row)
+    f.write("="*80 + "\n")
+    f.write("MAPPED CATEGORIES (included in output)\n")
+    f.write("="*80 + "\n\n")
+    for category, count in sorted(mapped_categories.items(), key=lambda x: x[1], reverse=True):
+        f.write(f"{category:<60} Count: {count:>4}\n")
+    
+    f.write("\n\n")
+    f.write("="*80 + "\n")
+    f.write("IGNORED CATEGORIES (not included in output)\n")
+    f.write("="*80 + "\n\n")
+    if ignored_categories:
+        for category, count in sorted(ignored_categories.items(), key=lambda x: x[1], reverse=True):
+            f.write(f"{category:<60} Count: {count:>4}\n")
+    else:
+        f.write("None - all categories were mapped!\n")
+    
+    f.write("\n\n")
+    f.write("="*80 + "\n")
+    f.write("MAPPING RULES\n")
+    f.write("="*80 + "\n\n")
+    for original, mapped in sorted(VALID_CATEGORIES.items()):
+        f.write(f"{original:<40} -> {mapped}\n")
 
-df = pd.DataFrame(rows)
-df = df.fillna('')
-
-column_order = ['patient_id', 'Seizure Onset Zone', 'Interictal Spikes', 'Bad Electrodes', 'Brain Lesions', 'Early Spread']
-existing_columns = [col for col in column_order if col in df.columns]
-df = df[existing_columns]
-
-df.to_csv(output_file, index=False)
-print(f"Saved to {output_file}")
-print(f"Shape: {df.shape}") 
+print(f"Audit report saved to: {output_file}")
+print(f"\nSummary:")
+print(f"  Mapped categories: {len(mapped_categories)}")
+print(f"  Ignored categories: {len(ignored_categories)}") 
