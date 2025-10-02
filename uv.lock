@@ -45,6 +45,27 @@ wheels = [
 ]
 
 [[package]]
+name = "bokeh"
+version = "3.8.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "contourpy" },
+    { name = "jinja2" },
+    { name = "narwhals" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "pandas" },
+    { name = "pillow" },
+    { name = "pyyaml" },
+    { name = "tornado", marker = "sys_platform != 'emscripten'" },
+    { name = "xyzservices" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/78/bd/8455ecfaa8100dbfbb2af40061c689a7a9c808f4f8c9582f0efd0c8c9a19/bokeh-3.8.0.tar.gz", hash = "sha256:bfdf5e9df910653b097f70cd38f4c2399d91af6e54a618126e2387cc33c9ec03", size = 6529746 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/96/9a/8e641b5415e12036d8a206147b8229d917a767b7d939521458d90feddcf5/bokeh-3.8.0-py3-none-any.whl", hash = "sha256:117c5e559231ad39fef87891a1a1b62b3bfefbaa47d536023537338f46015841", size = 7205343 },
+]
+
+[[package]]
 name = "certifi"
 version = "2025.8.3"
 source = { registry = "https://pypi.org/simple" }
@@ -427,6 +448,7 @@ name = "ieeg-atlas-data-curator"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "bokeh" },
     { name = "edfio" },
     { name = "ipykernel" },
     { name = "ipython" },
@@ -436,12 +458,14 @@ dependencies = [
     { name = "neuroconv", extra = ["edf"] },
     { name = "neurosift" },
     { name = "openpyxl" },
+    { name = "plotly" },
     { name = "pyqt6" },
     { name = "typer" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "bokeh", specifier = ">=3.6.2" },
     { name = "edfio", specifier = ">=0.4.9" },
     { name = "ipykernel", specifier = ">=6.30.1" },
     { name = "ipython", specifier = ">=9.4.0" },
@@ -451,6 +475,7 @@ requires-dist = [
     { name = "neuroconv", extras = ["edf"], specifier = ">=0.7.5" },
     { name = "neurosift", specifier = ">=0.2.13" },
     { name = "openpyxl", specifier = ">=3.1.5" },
+    { name = "plotly", specifier = ">=5.24.1" },
     { name = "pyqt6", specifier = ">=6.9.1" },
     { name = "typer", specifier = ">=0.19.2" },
 ]
@@ -844,6 +869,15 @@ wheels = [
 ]
 
 [[package]]
+name = "narwhals"
+version = "2.6.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/00/dd/40ff412dabf90ef6b99266b0b74f217bb88733541733849e0153a108c750/narwhals-2.6.0.tar.gz", hash = "sha256:5c9e2ba923e6a0051017e146184e49fb793548936f978ce130c9f55a9a81240e", size = 561649 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/50/3b/0e2c535c3e6970cfc5763b67f6cc31accaab35a7aa3e322fb6a12830450f/narwhals-2.6.0-py3-none-any.whl", hash = "sha256:3215ea42afb452c6c8527e79cefbe542b674aa08d7e2e99d46b2c9708870e0d4", size = 408435 },
+]
+
+[[package]]
 name = "neo"
 version = "0.14.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1135,6 +1169,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/23/e8/21db9c9987b0e728855bd57bff6984f67952bea55d6f75e055c46b5383e8/platformdirs-4.4.0.tar.gz", hash = "sha256:ca753cf4d81dc309bc67b0ea38fd15dc97bc30ce419a7f58d13eb3bf14c4febf", size = 21634 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/40/4b/2028861e724d3bd36227adfa20d3fd24c3fc6d52032f4a93c133be5d17ce/platformdirs-4.4.0-py3-none-any.whl", hash = "sha256:abd01743f24e5287cd7a5db3752faf1a2d65353f38ec26d98e25a6db65958c85", size = 18654 },
+]
+
+[[package]]
+name = "plotly"
+version = "6.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "narwhals" },
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a0/64/850de5076f4436410e1ce4f6a69f4313ef6215dfea155f3f6559335cad29/plotly-6.3.0.tar.gz", hash = "sha256:8840a184d18ccae0f9189c2b9a2943923fd5cae7717b723f36eef78f444e5a73", size = 6923926 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/95/a9/12e2dc726ba1ba775a2c6922d5d5b4488ad60bdab0888c337c194c8e6de8/plotly-6.3.0-py3-none-any.whl", hash = "sha256:7ad806edce9d3cdd882eaebaf97c0c9e252043ed1ed3d382c3e3520ec07806d4", size = 9791257 },
 ]
 
 [[package]]
@@ -1948,6 +1995,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/6a/aa/917ceeed4dbb80d2f04dbd0c784b7ee7bba8ae5a54837ef0e5e062cd3cfb/xmltodict-1.0.2.tar.gz", hash = "sha256:54306780b7c2175a3967cad1db92f218207e5bc1aba697d887807c0fb68b7649", size = 25725 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c0/20/69a0e6058bc5ea74892d089d64dfc3a62ba78917ec5e2cfa70f7c92ba3a5/xmltodict-1.0.2-py3-none-any.whl", hash = "sha256:62d0fddb0dcbc9f642745d8bbf4d81fd17d6dfaec5a15b5c1876300aad92af0d", size = 13893 },
+]
+
+[[package]]
+name = "xyzservices"
+version = "2025.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/00/af/c0f7f97bb320d14c089476f487b81f733238cc5603e0914f2e409f49d589/xyzservices-2025.4.0.tar.gz", hash = "sha256:6fe764713648fac53450fbc61a3c366cb6ae5335a1b2ae0c3796b495de3709d8", size = 1134722 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d6/7d/b77455d7c7c51255b2992b429107fab811b2e36ceaf76da1e55a045dc568/xyzservices-2025.4.0-py3-none-any.whl", hash = "sha256:8d4db9a59213ccb4ce1cf70210584f30b10795bff47627cdfb862b39ff6e10c9", size = 90391 },
 ]
 
 [[package]]
