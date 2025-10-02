@@ -1,10 +1,6 @@
 # ignor ai directory
 ai/
 
-# Generated outputs (can be regenerated)
-outputs/
-test_edf_list.txt
-
 ## Mac Filesystems ##
 .DS_Store
 .asv
