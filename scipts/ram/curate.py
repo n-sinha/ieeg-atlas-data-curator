@@ -41,7 +41,6 @@ def download_ram_release(ram_input_dir: Path, dataset_id: str ):
 
     # create a new directory for the dataset
     dataset_dir = ram_input_dir / dataset_id
-    dataset_dir.mkdir(parents=True, exist_ok=True)
 
     # check if the dataset is already downloaded
     if not dataset_dir.exists():
