@@ -43,12 +43,16 @@ def download_ram_release(ram_input_dir: Path, dataset_id: str ):
     dataset_dir = ram_input_dir / dataset_id
     dataset_dir.mkdir(parents=True, exist_ok=True)
 
-    # download the data from openneuro
-    subprocess.run(["git", "clone", f"https://github.com/OpenNeuroDatasets/{dataset_id}.git", dataset_dir.absolute()], check=True)
+    # check if the dataset is already downloaded
+    if not dataset_dir.exists():
+        # clone the data from openneuro
+        subprocess.run(["git", "clone", f"https://github.com/OpenNeuroDatasets/{dataset_id}.git", dataset_dir.absolute()], check=True)
+    else:
+        logging.info(f"Dataset {dataset_id} already downloaded")
+    
     # make a list of all patients in this dataset which starts with sub-
-
     patients_paths = [patient for patient in dataset_dir.glob('sub-*') if patient.is_dir()]
-
+    
     return patients_paths
 
 def curate_ram_patients(patients_paths: list[Path], channel_metadata: pd.DataFrame):
@@ -64,6 +68,15 @@ def curate_ram_patients(patients_paths: list[Path], channel_metadata: pd.DataFra
             patients_paths_atlas.append(patients_paths[patients_paths_all.index(patient)])
 
     return patients_paths_atlas
+
+def download_curated_ram(patients_path_atlas: list[Path], ram_output_dir: Path):
+
+    for patient_path in patients_path_atlas:
+        logging.info(f"Downloading patient {patient_path.name}")
+        dataset_id = patient_path.parent.name + '/' + patient_path.name
+        output_dir = ram_output_dir.joinpath(patient_path.name)
+        subprocess.run(["aws", "s3", "sync", "--no-sign-request", f"s3://openneuro.org/{dataset_id}", output_dir.absolute()], check=True)
+
 
 def main():
 
@@ -87,9 +100,8 @@ def main():
     # curate the patients
     patients_path_atlas = curate_ram_patients(patients_paths, channel_metadata)
 
-    # save the patients paths to a csv file
-    pd.DataFrame(patients_path_atlas, columns=['patient_path']).to_csv(ram_output_dir / "patients_paths_atlas.csv", index=False)
-    
+    # download the data from openneuro
+    download_curated_ram(patients_path_atlas, ram_output_dir)  
 
 #%%
 if __name__ == "__main__":
