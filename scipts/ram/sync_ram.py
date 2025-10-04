@@ -27,7 +27,7 @@ def is_not_empty(value):
 
 def main():
     # get all events.tsv files in the data/output/ram directory
-    events_tsv_files = list(Path("data/output/ram").rglob("**/*ieeg*/*_events.tsv"))
+    events_tsv_files = list(Path("data/output/ram").rglob("**/*ieeg*/*ses-0*_events.tsv"))
     logging.info(f"Found {len(events_tsv_files)} events.tsv files")
     start_task_onsets = []
     for events_tsv_file in events_tsv_files:
