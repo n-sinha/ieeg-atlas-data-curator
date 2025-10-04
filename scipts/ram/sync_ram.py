@@ -23,12 +23,20 @@ def is_not_empty(value):
         return value.strip().lower() not in ['n/a', 'na', '', 'nan', 'null']
     return True
 
-#%%
+def clip_edf_file(edf_file: Path, start_time=0.0, end_time=135.0, output_file: Path = None):
+    # read the edf file
+    raw = mne.io.read_raw_edf(edf_file, preload=True, verbose=False)
+    # clip the edf file
+    raw = raw.copy().crop(tmin=start_time, tmax=end_time)
+    # save the edf file
+    raw.export(output_file, format='edf')
+    logging.info(f"Clipped edf file saved to {output_file}")
 
-def main():
+def get_task_onsets(data_dir: Path) -> list:
     # get all events.tsv files in the data/output/ram directory
-    events_tsv_files = list(Path("data/output/ram").rglob("**/*ieeg*/*ses-0*_events.tsv"))
+    events_tsv_files = list(data_dir.rglob("**/*ieeg*/*ses-0*_events.tsv"))
     logging.info(f"Found {len(events_tsv_files)} events.tsv files")
+    
     start_task_onsets = []
     for events_tsv_file in events_tsv_files:
         # read the events.tsv file
@@ -41,7 +49,17 @@ def main():
         logging.info(f"Onset: {start_task_onset} for {events_tsv_file.name}")
 
     logging.info(f"Minimum start task onset: {min(start_task_onsets)}")
+    return start_task_onsets
 
+#%%
+
+def main():
+    start_task_onsets = get_task_onsets(Path("data/output/ram"))
+
+    # get all edf files from ses 0 in the data/output/ram directory
+    edf_files = list(Path("data/output/ram").rglob("**/*ieeg*/*ses-0*bipolar*.edf"))
+    logging.info(f"Found {len(edf_files)} edf files")
+    
 #%%
 
 if __name__ == "__main__":
