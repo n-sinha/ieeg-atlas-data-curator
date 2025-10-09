@@ -29,7 +29,10 @@ def main(edf_file: Path = typer.Option(..., "--edf-file", "-f", help="The EDF fi
     
     # Plot with the interactive browser
     fig = edf_data.plot(block=True)
+
+    return edf_data
     
 # %%
 if __name__ == "__main__":
+    # typer.run(main(edf_file=Path("data/output/ram/sub-R1010J/ses-0/ieeg/sub-R1010J_ses-0_task-FR1_acq-bipolar_ieeg.edf")))
     typer.run(main)
