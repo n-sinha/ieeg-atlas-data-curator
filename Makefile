@@ -11,6 +11,7 @@ help:
 	@echo "make clean           - remove all files from the input / output directories
 
 run:
+	uv sync
 	mkdir -p data/input/ram/
 	mkdir -p data/output/ram/
 	uv run scipts/ram/channel_metadata.py
