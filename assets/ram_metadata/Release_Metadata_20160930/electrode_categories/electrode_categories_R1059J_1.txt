@@ -1,0 +1,28 @@
+R1059J_1
+
+Seizure onset zone
+
+LAT1
+LAT2
+LAT3
+LAT4
+LDA1
+LDA2
+LDA3
+LDA4
+
+Interictal 
+
+LAT5
+LAT6
+LAT7
+LAT8
+
+Bad electrodes
+
+LDC1
+LDC2
+LDC3
+LDC4
+RDC
+LFB3

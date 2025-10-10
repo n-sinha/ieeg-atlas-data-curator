@@ -1,0 +1,25 @@
+R1057E
+
+Seizure Onset Zone
+
+LSTGHd1
+LSTGHd2
+
+Interictal Spikes
+
+RMFSOd1
+RM1ld7
+RM1ld8
+RM1ld9
+RM1Cd3
+RM1Cd4
+RM1Cd5
+RM1Cd6
+RM1Cd7
+RM1Cd8
+
+Bad Electrodes
+
+-
+
+

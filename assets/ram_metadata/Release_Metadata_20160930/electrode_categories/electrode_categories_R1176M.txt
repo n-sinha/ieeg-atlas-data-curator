@@ -1,0 +1,35 @@
+R1176M
+
+Seizure Onset Zone
+
+RX1
+RX2
+RX3
+RX4
+
+Interictal Spikes
+
+RZ1
+RZ2
+RZ3
+RX1
+RX2
+RX3
+RC7
+RC8
+LA1
+LA2
+LA3
+LA4
+LC3
+LC4 
+
+Bad Electrodes
+
+RC6
+RT10
+RZ4
+LA12
+LA14
+LC1
+LC10

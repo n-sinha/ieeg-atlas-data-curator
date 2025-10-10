@@ -1,0 +1,25 @@
+R1048E
+
+Seizure Onset Zone
+
+1RHd8
+1RHd9
+
+Interictal Spikes
+
+2RHd2
+2RHd3
+3RHd3
+3RHd4
+5RHd1
+5RHd2
+4RHd4
+1RHd3
+1RHd4
+
+Bad Electrodes
+
+-
+
+***
+Listed onset zone is atypical, typical onset unclear

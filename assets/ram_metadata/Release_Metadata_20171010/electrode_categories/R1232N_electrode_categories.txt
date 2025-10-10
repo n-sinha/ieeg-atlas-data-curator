@@ -1,0 +1,14 @@
+R1232N
+
+Seizure Onset Zones
+
+LP1
+LP2
+LP3
+LP4
+RP3
+
+LPIT2
+LPIT3
+LPP5
+LPP6

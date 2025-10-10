@@ -1,0 +1,19 @@
+R1056M
+
+Seizure Onset Zone
+
+RB1
+RB2
+RB3
+
+Interictal Spikes
+
+RB1
+RB2
+RB3
+
+Bad Electrodes
+
+-
+
+

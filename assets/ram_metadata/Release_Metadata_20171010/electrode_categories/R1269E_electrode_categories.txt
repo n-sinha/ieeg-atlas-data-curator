@@ -1,0 +1,43 @@
+R1269E
+
+Seizure Onset Zones
+
+4Rd1
+4Rd2
+28Rd2
+28Rd3
+28Rd4
+28Rd5
+28Rd6
+36Rd5
+36Rd6
+36Rd7
+36Rd8
+
+interictal Spikes
+
+2Rd6
+2Rd7
+2Rd8
+4Rd7
+4Rd8
+6Rd5
+6Rd6
+6Rd7
+6Rd8 
+14Rd5
+14Rd6
+14Rd7
+16Rd5
+16Rd6
+16Rd7 
+
+Brain lesion
+
+18 Rd			
+20Rd						
+22Rd				
+24Rd					
+26Rd				
+28Rd					
+30Rd			

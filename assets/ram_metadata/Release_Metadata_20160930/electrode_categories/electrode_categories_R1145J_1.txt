@@ -1,0 +1,19 @@
+R1145J_1
+
+Seizure Onset Zone
+
+RD1
+RD2
+RD3
+RD4
+
+Interictal Spikes
+
+RD1
+RD2
+RC1
+RC2
+
+Bad Electrodes
+
+-

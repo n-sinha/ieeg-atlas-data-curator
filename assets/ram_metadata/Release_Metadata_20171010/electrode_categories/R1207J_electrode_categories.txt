@@ -1,0 +1,33 @@
+R1207J
+
+Seizure onset zone
+
+LC2
+LC3
+LC4
+LD3
+LD4
+LD5
+LK3
+LK4
+LK5
+LA1
+
+Interictal
+
+LC2
+LC3
+LC4
+LC5
+LD3
+LD4
+LD5
+LK3
+LK4
+LK5
+
+Bad electrodes
+
+LI6
+LI7
+LI8

@@ -1,0 +1,21 @@
+R1195E
+
+Seizure onset zone
+NONE
+
+Significant interictal spiking
+1Ld
+3Ld
+5Ld2
+5Ld3
+2Rd
+4Rd
+8Rd
+6Rd1
+6Rd2
+
+Brain lesions
+NONE
+
+Broken leads
+NONE

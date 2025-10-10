@@ -1,0 +1,23 @@
+R1032D
+
+Seizure Onset Zone
+
+ROTD1
+ROTD2
+ROTD3
+ROTD4
+LOTD1
+LOTD2
+LOTD3
+LOTD4
+
+Interictal Spikes
+
+ROTD1
+ROTD2
+ROTD3
+ROTD4
+
+Bad Electrodes
+
+-

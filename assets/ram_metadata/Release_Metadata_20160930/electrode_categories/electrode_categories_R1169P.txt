@@ -1,0 +1,41 @@
+R1169P
+
+Seizure Onset Zone
+
+RPFa4
+RPFb3
+RPFc3
+RPFa4
+RPF
+Spread to RH and LAF
+
+Interictal Spikes
+
+RPF
+RAFD3
+RAFA2
+RAFA3
+RAFA4
+RAFB2
+RAFB3
+RAFB4
+RAFC2
+RAFD1
+RAFD2
+RAFD3
+RAFD4
+RPFA2
+RPFA3
+RPFB2
+RPFB3
+RPFC2
+RPFC3
+RPFC4
+RH1
+RH2
+RH3
+RH4
+
+Bad Electrodes
+
+none reported

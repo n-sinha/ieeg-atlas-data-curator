@@ -1,0 +1,21 @@
+R1021D
+
+Seizure Onset Zone
+
+ROTD1
+ROTD2
+ROTD3
+ROTD4
+LPT
+
+Interictal Spikes
+
+-
+
+Bad Electrodes
+
+-
+
+
+***
+LPT listed as seizure onset zone on report, but contacts not specified.

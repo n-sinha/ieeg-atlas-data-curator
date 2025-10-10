@@ -1,0 +1,22 @@
+R1019J
+
+Seizure onset zone
+
+RATA7
+RPTB4
+
+Interictal
+
+RATA5
+RATA6
+RATA7
+RATA8
+RAH1
+RAH2
+
+Bad electrodes
+
+RAH3
+RAH4
+
+

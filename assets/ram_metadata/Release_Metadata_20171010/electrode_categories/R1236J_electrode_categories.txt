@@ -1,0 +1,13 @@
+R1236J
+
+Seizure Onset Zones
+
+LC1
+LC2
+
+Interictal Spikes
+
+LC1
+LC2
+LD1
+LD2

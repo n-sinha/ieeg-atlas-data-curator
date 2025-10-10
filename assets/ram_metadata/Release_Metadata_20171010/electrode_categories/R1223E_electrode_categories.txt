@@ -1,0 +1,21 @@
+R1223E
+
+Seizure Onset Zones
+
+7Ld1
+7Ld2
+9Ld1
+9Ld2 
+
+Interictal Spikes
+
+7Ld1
+9Ld1
+3Ld1
+3Ld2
+27Ls1
+27Ls2
+27Ls3
+27Ls4
+27Ls5
+25Ls9

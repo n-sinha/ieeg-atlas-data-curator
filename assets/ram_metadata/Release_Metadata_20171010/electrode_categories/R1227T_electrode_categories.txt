@@ -1,0 +1,44 @@
+R1227T
+
+Ictal Onset:
+RY1
+RY2
+RY3
+RY4
+RY5
+RY6
+
+
+Interictal spiking:
+LB1
+LB2
+LC1
+LC2
+RB1
+RB2
+RC1
+RC2
+RY1
+RY2
+RY3
+RY4
+
+Brain lesions:
+RU1
+RU2
+RU3
+RY1
+RY2
+RY3
+RL1
+RL2
+RL3
+RV1
+RV2
+RV3
+RV4
+RV5
+RV6
+
+Broken leads:
+NONE

@@ -1,0 +1,25 @@
+R1182C
+
+Ictal Onset:
+MI6
+PTI2
+IPI7
+IPI8
+
+Interictal spiking:
+PIM2
+PIM3
+PIM4
+PIM4
+PIM5
+PIM6
+PIM7
+MI4
+MI5
+MI6
+
+Brain lesions:
+NONE
+
+Broken leads:
+NONE

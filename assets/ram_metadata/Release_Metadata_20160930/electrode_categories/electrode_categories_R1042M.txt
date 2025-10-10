@@ -1,0 +1,39 @@
+R1042M
+
+Seizure Onset Zone
+
+RTG12
+RTG4
+RPD2
+RPD3
+RPD4
+RTG20
+
+Interictal Spikes
+
+RTG6
+RTG7
+RTG11
+RTG12
+RTG13
+RTG20
+RTG21
+RPD2
+RPD3
+RPD4 
+RITS11
+RMTS2
+RMTS3
+
+Brain Lesions
+
+RTG12
+RTG13
+RTG20
+RTG21
+
+Bad Electrodes
+
+-
+
+

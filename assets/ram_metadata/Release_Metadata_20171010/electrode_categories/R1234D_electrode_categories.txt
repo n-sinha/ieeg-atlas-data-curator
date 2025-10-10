@@ -1,0 +1,21 @@
+R1234D
+
+Seizure Onset Zones
+
+LTG9
+LTG10
+LTG17
+LTG19
+LTG25
+LTG26
+
+
+interictal Spikes
+
+LTG1
+LTG8
+LTG9
+LTG10
+LTG11
+LTG18
+LTG26

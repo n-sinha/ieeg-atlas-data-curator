@@ -1,0 +1,26 @@
+R1306E
+
+Seizure Onset Zones
+
+4Rd1
+4Rd2
+6Rd1
+6Rd2
+2Rd1
+2Rd2
+1Ld1
+3Ld1
+3Ld2
+
+interictal Spikes
+
+1Ld1
+1Ld2
+3Ld1
+3Ld2
+2Rd1
+2Rd2
+4Rd1
+4Rd2
+6Rd1
+6Rd2

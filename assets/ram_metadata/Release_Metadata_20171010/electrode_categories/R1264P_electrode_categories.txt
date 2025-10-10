@@ -1,0 +1,23 @@
+R1264P
+
+Seizure Onset Zones
+
+LA1
+LA2
+LA3
+LB1
+LB2
+LB3
+
+Interictal Spikes
+
+LA1
+LA2
+LA3
+LB1
+LB2
+LB3
+LB4
+LB5
+
+

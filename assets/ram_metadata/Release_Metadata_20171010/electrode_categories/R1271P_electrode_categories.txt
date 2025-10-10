@@ -1,0 +1,16 @@
+R1271P
+
+Seizure Onset Zones
+
+RB1
+
+Broken Leads
+
+RC11
+RC12
+RH8
+RH9
+RH10
+RH11
+RH12
+

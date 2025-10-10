@@ -1,0 +1,19 @@
+R1147P
+
+Seizure Onset Zone
+
+LDH2
+LDA2
+LMST2
+LDH3
+LDA3
+
+Interictal Spikes
+
+LDH
+LDA
+LMT
+
+Bad Electrodes
+
+None

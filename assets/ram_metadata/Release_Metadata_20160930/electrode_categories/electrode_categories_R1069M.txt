@@ -1,0 +1,53 @@
+R1069M
+
+Seizure Onset Zone
+
+LFPG2
+LFPG10
+LFPG18
+LFPG19
+LFPG22
+LFPG23
+LFPG27
+LFPG34
+LFPG35
+LFPG41
+LFPG42
+LFPG50
+LSS1
+LSS2
+
+Interictal Spikes
+
+LSS1
+LSS2
+LFPG8
+LFPG28
+LFPG29
+LFPG30
+LFPG31
+LFPG34
+LFPG35
+LFPG36
+LFPG41
+LFPG42
+LFPG43
+LFPG44
+LFPG50
+LFPG51
+LFPG58
+LFPG59
+
+Bad Electrodes
+
+-
+
+Brain Lesions
+
+LFD1
+LFD2
+LFD3
+LFD4
+
+** brain lesion is left frontal cortical dysplasia
+

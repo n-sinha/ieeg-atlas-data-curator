@@ -1,0 +1,39 @@
+R1161E
+
+Seizure Onset Zone
+
+L5d1
+L5d2
+L9d1
+L9d2
+L9d3
+L11d1
+L11d2
+
+Interictal
+
+L1d1
+L1d2
+L1d3
+L1d4
+L5d1
+L5d2
+L5d3
+L9d1
+L9d2
+L9d3
+L9d4
+L9d5
+L11d1
+L11d2
+L11d3
+L11d4
+L11d5
+
+Brain Lesions
+
+All contacts were in the lesion
+
+Bad Electrodes
+
+None reported

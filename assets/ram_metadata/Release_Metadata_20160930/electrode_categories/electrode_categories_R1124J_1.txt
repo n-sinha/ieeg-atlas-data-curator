@@ -1,0 +1,47 @@
+R1124J_1
+
+Seizure Onset
+
+RA1
+RA2
+RA3
+RX2
+RX3
+RX4
+LE8
+LE9
+LE10
+LE11
+LE12
+LD1
+LD2
+LD3
+LJ3
+LJ4
+LJ5
+
+Interictal Spikes
+
+LD1
+LD2
+LD3
+LE8
+LE12
+
+Bad Electrodes
+
+RA1
+RA2
+RA3
+RX2
+RX3
+RX4
+LE8
+LE9
+LE10
+LE11
+LE12
+LJ4
+LJ5
+LD2
+

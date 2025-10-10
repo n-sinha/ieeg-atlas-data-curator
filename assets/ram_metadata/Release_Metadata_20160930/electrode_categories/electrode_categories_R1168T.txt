@@ -1,0 +1,21 @@
+R1168T
+
+Seizure Onset Zone
+
+RB7
+RB8
+RB1
+RB2
+RB3
+RB4
+
+Interictal Spikes
+
+RB1
+RB2
+RB7
+RB8
+
+Bad Electrodes
+
+-

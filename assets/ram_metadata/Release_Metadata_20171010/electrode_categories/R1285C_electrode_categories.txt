@@ -1,0 +1,23 @@
+R1285C
+
+Ictal Onset:
+NONE
+
+Interictal spiking:
+LPCC1
+LPCC2
+LPCC3
+RHCH1
+RHCH2
+RHCH3
+RHCB3
+RHCB4
+LHCB6
+LHCH1
+LHCH2
+
+Brain lesions:
+NONE
+
+Broken leads:
+NONE

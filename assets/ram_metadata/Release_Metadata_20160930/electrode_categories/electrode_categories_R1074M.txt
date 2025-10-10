@@ -1,0 +1,24 @@
+R1074M
+
+Seizure Onset Zone
+
+RZ2
+RZ3
+RZ4
+RZ5
+RZ6
+RZ7
+RZ8
+RZ9
+
+Interictal Spikes
+
+-
+
+Bad Electrodes
+
+LZ13
+LY15
+
+***
+Unspecific LZ contacts listed, see REDCap

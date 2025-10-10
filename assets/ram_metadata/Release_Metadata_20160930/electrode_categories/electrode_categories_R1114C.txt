@@ -1,0 +1,47 @@
+R1114C
+
+Seizure Onset Zones
+
+MT5
+MT6
+MT7
+MT8
+P7
+P8
+P9
+P10
+P11
+P12
+PP5
+PP6
+
+Interictal Spikes
+
+MT5
+MT6
+MT7
+MT8
+P8
+P9
+P10
+P11
+P12
+PP7
+PP8
+PP9
+PP10
+PP11
+FO5
+FO6
+FO7
+FO8
+HB7
+HB8 
+BT4
+BT5
+BT6
+BT7
+
+Bad Electrodes
+
+-

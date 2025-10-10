@@ -1,0 +1,43 @@
+R1023J
+
+Seizure onset zone
+
+RI1
+RI2
+RI3
+RI4
+RI5
+RI6
+RI7
+RA1
+RA2
+RA3
+RA4
+RA5
+RSAT1
+RSAT2
+RSAT3
+RSAT4
+RSAT5
+RMAT1
+RMAT2
+RMAT3
+RMAT4
+RMAT5
+RMAT6
+
+Interictal Spikes
+
+-
+
+Bad electrodes
+
+RK1
+RK2
+RK3
+RMAT7
+RMAT8
+RG2
+RG3
+
+

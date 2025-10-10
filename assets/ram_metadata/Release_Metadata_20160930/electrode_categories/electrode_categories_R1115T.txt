@@ -1,0 +1,33 @@
+R1115T
+
+Seizure Onset Zone
+
+RA1
+RA2
+RA3
+RB1
+RB2
+RB3
+LB1
+LB2
+LB3
+
+Interictal Spikes
+
+RA1
+RA2
+RA3
+RB1
+RB2
+RB3
+RC1
+RC2
+RC3
+LB1
+LB2
+LB3
+
+Bad Electrodes
+
+-
+

@@ -1,0 +1,34 @@
+R1130M
+
+Seizure Onset Zone
+
+LIG2
+LIG3
+LIG4
+LIG10
+LIG11
+LIG12
+
+Interictal
+
+LFD1
+LFD2
+LFD3
+LFD4
+LFPG5
+LFPG10
+LIG2
+LIG3
+LIG11
+LVS1
+LPFG21
+LPFG27
+
+Bad electrodes
+
+LFG3
+RD3
+RD4
+LFG1
+LFG2
+

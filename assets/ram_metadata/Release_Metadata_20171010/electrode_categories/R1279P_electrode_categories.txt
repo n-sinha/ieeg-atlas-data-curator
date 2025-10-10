@@ -1,0 +1,21 @@
+R1279P
+
+Ictal Onset:
+LO1
+LO2
+LA1
+LA2
+
+Significant Interictal Spiking:
+LA1
+LA2
+RA1
+RA2
+RB1
+RB2
+
+Brain Lesions:
+none
+
+Broken Leads:
+none

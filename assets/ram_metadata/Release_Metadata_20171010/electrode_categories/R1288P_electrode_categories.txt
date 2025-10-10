@@ -1,0 +1,20 @@
+R1288P
+
+interictal Spikes
+
+RA1
+RA2
+RA3
+RA4
+RA5
+RA6
+RA7
+RA8
+
+Broken Leads
+
+LA9
+RC12
+LF8
+RA6
+

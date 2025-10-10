@@ -1,0 +1,48 @@
+R1136N
+
+Seizure Onset Zone
+
+LPST2
+LPST3
+LPST4
+G1
+G2
+G3
+G8
+G9
+G10
+G14
+G15
+G16
+
+Interictal Spikes
+
+TT1
+TT2
+TT3
+TT4
+TT5
+LPST1
+LPST2
+LPST3
+G1
+G2
+G3
+G4
+G8
+G9
+G10
+G11
+G12
+G31
+G32
+RAD3
+RAHD2
+RAHD3
+RAHD4
+OF1
+OF2
+
+Bad Electrodes
+
+None reported

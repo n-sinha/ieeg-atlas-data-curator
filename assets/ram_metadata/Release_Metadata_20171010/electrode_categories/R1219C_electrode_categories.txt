@@ -1,0 +1,16 @@
+R1219C
+
+Ictal Onset:
+LHCH2
+
+Interictal spiking:
+LHCH1
+LHCH2
+LHCB1
+LHCB2
+
+Brain lesions:
+NONE
+
+Broken leads:
+NONE

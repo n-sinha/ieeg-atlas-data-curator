@@ -1,0 +1,24 @@
+R1222M
+
+Ictal Onset:
+LG36
+
+Interictal spiking:
+LG22
+LG23
+LG34
+LG36
+LG37
+LG43
+ 
+Brain lesions:
+NONE
+
+Broken leads:
+LG12
+LG56
+LG64
+LMIH3
+LOF7
+LOF8
+LAT4

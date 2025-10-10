@@ -1,0 +1,19 @@
+R1077T
+
+Seizure Onset Zone
+
+RI1
+RI2
+
+Interictal Spikes
+
+RB1
+RB2
+RB3
+LB1
+LB2
+LB3
+
+Bad Electrodes
+
+-

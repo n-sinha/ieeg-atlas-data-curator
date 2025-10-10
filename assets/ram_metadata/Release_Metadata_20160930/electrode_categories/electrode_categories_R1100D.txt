@@ -1,0 +1,24 @@
+R1100D
+
+Seizure Onset Zone
+
+LOTD1
+LOTD2
+
+Interictal Spikes
+
+LOTD1
+LOTD2
+LOTD3
+LOTD4
+LOTD5
+LOTD6
+LOTD7
+LTG10
+LTG18
+LTG26
+LTG27
+
+Bad Electrodes
+
+-

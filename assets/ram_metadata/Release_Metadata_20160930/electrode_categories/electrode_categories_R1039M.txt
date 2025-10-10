@@ -1,0 +1,34 @@
+R1039M
+
+Seizure Onset Zone
+
+RMFS1
+RMFS2
+RAPS1
+RAPS2
+RAPS3
+RPFS1
+RPFS2
+RPFS3
+RMFS1
+RMFS2
+
+Interictal Spikes
+
+RMFS1
+RMFS2
+RMFS3
+RMFS4
+RAPS1
+RAPS2
+RAPS3
+RAPS4
+RPPS2
+RPPS3
+RPPS4
+
+Bad Electrodes
+
+-
+
+

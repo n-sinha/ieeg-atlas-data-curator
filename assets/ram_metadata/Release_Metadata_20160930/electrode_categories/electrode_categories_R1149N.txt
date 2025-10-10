@@ -1,0 +1,25 @@
+R1149N
+
+Seizure Onset Zone
+
+PST1
+TT1
+MST1
+MST2
+AST1
+
+Interictal Spikes
+
+TT1
+TT2
+TT3
+TT4
+TT5
+PST1
+AST2
+AST3
+MST2
+
+Bad Electrodes
+
+None

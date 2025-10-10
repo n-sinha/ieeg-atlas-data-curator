@@ -1,0 +1,45 @@
+R1009W
+
+Seizure Onset Zone
+
+-
+
+Interictal Spikes
+
+LSP1
+LSP2
+LSP3
+LSP4
+LSP10
+LSP11
+LSP12
+LSP13
+G9
+G10
+G18
+G22
+G23
+G26
+G30
+G31
+G32
+G37
+G38
+G39
+G40
+G45
+G46
+G47
+G48
+G49
+G54
+G55
+G56
+LIH8
+
+Bad electrodes
+
+-
+
+***
+No ictal events observed

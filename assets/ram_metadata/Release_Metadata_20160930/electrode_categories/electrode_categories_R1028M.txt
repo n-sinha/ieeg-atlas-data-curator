@@ -1,0 +1,25 @@
+R1028M
+
+Seizure Onset Zone
+
+RAD1
+RTG1
+RTS1
+RTS2
+RTS3
+
+Interictal Spikes
+
+PTG2
+PTG3
+PTG4
+PTG5
+PTG6
+
+Bad Electrodes
+
+-
+
+***
+Unspecified contacts in right amygdala, anterior/mesial right temporal lobe listed for interictal 
+spikes

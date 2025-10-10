@@ -1,0 +1,26 @@
+R1267J
+
+Ictal Onset:
+LOCL7
+LOCL8
+LOCL9
+LOCI1
+LOCI2
+LOCI3
+LOCI4
+LOCI5
+LOCI6
+LOCI7
+LOCI8
+LOCI9
+LOCI10
+
+Significant Interictal Spiking:
+none
+
+Brain Lesions:
+none
+
+Broken Leads:
+LOCL10
+LMH14

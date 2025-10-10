@@ -1,0 +1,34 @@
+R1215M
+
+Ictal Onset:
+LAD2
+LAD3
+LAST1
+LAST2
+LPST1
+
+Interictal spiking:
+LAD1
+LAD2
+LAD3
+LAST1
+LPST1
+LPST2
+LPST3
+LPF3
+LPF4
+LAF1
+LAF2
+LAF3
+RHD1
+RHD2
+
+Brain lesions:
+NONE
+
+Broken leads:
+LPD1
+LPD2
+LPD3
+LPD4
+LAD4

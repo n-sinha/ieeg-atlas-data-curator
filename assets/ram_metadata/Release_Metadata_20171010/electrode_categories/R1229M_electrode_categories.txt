@@ -1,0 +1,29 @@
+R1229M
+
+Ictal Onset:
+M1-4
+M1-5
+M1-6
+
+Interictal spiking:
+M1-4
+M1-5
+M1-6
+LP10
+LP11
+LP12
+LS3
+LS4
+LS5
+MM3
+MM4
+MM5
+MM6
+MM7
+ 
+Brain lesions:
+NONE
+
+Broken leads:
+LP16
+LH5

@@ -1,0 +1,17 @@
+R1250N
+
+Seizure Onset Zones
+
+PG45
+PG43
+
+Interictal
+
+
+PT3
+PT4
+PT5
+PMT1
+PMT2
+PMT3
+G41

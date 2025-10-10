@@ -1,0 +1,21 @@
+R1092J_2
+
+Seizure Onset Zone
+
+RAH1
+LAH1
+
+Interictal Spikes
+
+LAH1
+LH1
+LE3
+LE4
+LE5
+RAH1
+RH1
+
+Bad Electrodes
+
+LPC1
+LPC2

@@ -1,0 +1,16 @@
+R1312N
+
+Interictal
+
+PID/MPID 3
+PID/MPID 4
+AID/MAID 2
+PST1
+PST2
+MST1
+MST2
+MST3
+
+Brain Lesion
+
+PST4

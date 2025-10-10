@@ -1,0 +1,37 @@
+R1151E
+
+Seizure Onset Zone
+
+LAmyd1
+LAmyd2
+LAmyd3
+LAHd1
+LAHd2
+LAHd3
+LMHd1
+LMHd2
+LMHd3
+
+Interictal
+
+LAmd1
+LAmd2
+LAmd3
+LAhd1
+LAhd2
+LAhd3
+LMHd1
+LMHd2
+LMHd3
+LAMd1
+LAMd2
+LAMd3
+LAMd4
+LAMd5
+LATs10
+LMTs1
+LMTs2
+
+Bad Electrodes
+
+None reported

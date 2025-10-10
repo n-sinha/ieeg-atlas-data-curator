@@ -1,0 +1,31 @@
+R1090C
+
+Seizure Onset Zone
+
+LHH
+LHB
+
+Interictal Spikes
+
+LA1
+LA2
+LHH1
+LHH2
+LHH3
+LHH4
+LHH5
+LHH6
+LHB3
+LHB4
+LPBT3
+LPBT4
+LPBT5
+LPBT6
+LPBT7
+LPC1
+LPC2
+LPC3
+
+Bad Electrodes
+
+-

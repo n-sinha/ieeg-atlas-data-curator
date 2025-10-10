@@ -1,0 +1,18 @@
+R1284N
+
+Seizure Onset Zones
+
+PST2
+PST3
+PPST1
+PPST2
+
+Interictal
+
+
+G4
+G5
+G6
+G12
+G13
+G14

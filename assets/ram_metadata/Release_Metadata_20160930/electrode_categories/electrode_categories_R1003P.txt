@@ -1,0 +1,43 @@
+R1003P
+
+Seizure Onset Zone
+
+LAT2
+LAT3
+LG41
+LG42
+LG43
+LG46
+LG48
+LG62
+LG63
+LG5
+LG6
+
+Interictal Spikes
+
+LG4
+LG6
+LG7
+LG13
+LG31
+LG34
+LG35
+LG41
+LG42
+LG43
+LG44
+LG45
+LDA1
+LDA2
+LDA3
+LDA4
+LMT2
+LPT3
+LDH1
+LDH2
+
+Bad electrodes
+
+-
+

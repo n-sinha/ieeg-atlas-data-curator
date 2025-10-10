@@ -1,0 +1,57 @@
+R1101T
+
+Seizure Onset Zone
+
+LB1
+
+Interictal Spikes
+
+LB1
+LB2
+LB3
+LE1
+LE2
+LE3
+LI4
+LI5
+LI6
+LI7
+LI8
+LC1
+LC2
+LC3
+LT4
+LT5
+RB1
+RB2
+
+Bad Electrodes
+
+LT1
+LT2
+LT3
+LT4
+LT5
+LT6
+LT7
+LF9
+LF10
+LV6
+LV7
+LV8
+LP7
+LP8
+LP9
+LX5
+LX6
+LX7
+LX8
+LX9
+LH7
+LQ5
+LQ6
+LQ7
+LQ8
+
+***
+Bad electrodes are within region of encephalomalacia

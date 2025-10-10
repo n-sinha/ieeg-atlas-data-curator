@@ -1,0 +1,27 @@
+R1020J
+
+Seizure onset zone
+
+RAT6
+RAT7
+RAT8
+RSTA2
+RSTA3
+RFA1
+RFA2
+RFA3
+RFA7
+
+Interictal Spikes
+
+-
+
+Bad electrodes
+
+RFB1
+RFB2
+RPTB1
+RPTB2
+RPTB3
+
+

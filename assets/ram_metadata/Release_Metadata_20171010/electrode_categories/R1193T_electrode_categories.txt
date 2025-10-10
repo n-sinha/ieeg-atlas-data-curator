@@ -1,0 +1,13 @@
+R1193T
+
+Ictal Onset:
+RY3
+
+Interictal spiking:
+RY3
+
+Brain lesions:
+NONE
+
+Broken leads:
+NONE

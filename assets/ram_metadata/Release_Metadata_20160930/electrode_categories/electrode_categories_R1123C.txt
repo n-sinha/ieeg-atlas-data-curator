@@ -1,0 +1,35 @@
+R1123C
+
+Seizure Onset Zone
+
+A1
+A2
+HB1
+HB2
+HB3
+HB4
+HH1
+HH2
+BT2
+BT3
+BT4
+BT5
+BT9
+
+Interictal Spikes
+
+HB1
+HB2
+HB3
+HB4
+HH1
+HH2
+BT2
+BT3
+BT4
+BT5
+BT9
+
+Bad Electrodes
+
+-

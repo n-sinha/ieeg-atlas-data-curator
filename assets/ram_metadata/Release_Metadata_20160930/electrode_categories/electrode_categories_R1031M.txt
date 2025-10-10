@@ -1,0 +1,25 @@
+R1031M
+
+Seizure Onset Zone
+
+LTD1
+LTD2
+LTD3
+LTD4
+RTD1
+RTD2
+RTD3
+RTD4
+RTD5
+LTD5
+LTD6
+
+Interictal Spikes
+
+-
+
+Bad Electrodes 
+
+-
+
+

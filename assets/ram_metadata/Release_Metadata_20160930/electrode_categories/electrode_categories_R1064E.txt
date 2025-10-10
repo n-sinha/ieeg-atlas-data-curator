@@ -1,0 +1,29 @@
+R1064E
+
+Seizure Onset Zone
+
+RSPd6
+RSPd7
+RPId6
+RPId7
+
+Interictal Spikes
+
+RSAd6
+RSAd7
+RSMd5
+RSMd6
+RSMd7
+RSPd6
+RSPd7
+RPSd6
+RCPd6
+RCPd7
+RCPd8
+RCPd9
+RCPd10
+
+Bad Electrodes
+
+-
+

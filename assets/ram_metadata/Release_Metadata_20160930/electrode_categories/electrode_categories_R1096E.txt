@@ -1,0 +1,46 @@
+R1096E
+
+Seizure Onset Zone
+
+5LMHD1
+5LMHD2
+2RAmyd1
+2RAmyd2
+4RAHd1
+4RAHd2
+
+Interictal Spikes
+
+1LAmyd1
+1LAmyd2
+1LAmyd3
+1LAmyd4
+1LAmyd5
+1LAmyd6
+3LAHd1
+3LAHd2
+3LAHd3
+3LAHd4
+3LAHd5
+5LMHd1
+5LMHd2
+2RAmyd1
+2RAmyd2
+2RAmyd3
+2RAmyd4
+2RAmyd5
+4RAHd1
+4RAHd2
+4RAHd3
+4RAHd4
+6RMHd1
+6RMHd2
+4RAHd1
+4RAHd2
+4RAHd3
+6RMHd1
+6RMHd2
+
+Bad Electrodes
+
+-

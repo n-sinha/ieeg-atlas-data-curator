@@ -1,0 +1,33 @@
+R1070T
+
+Seizure Onset Zone
+
+Z1
+Z2
+
+Interictal Spikes
+
+LB1
+LB2
+LB3
+LC1
+LC2
+LC3
+LC4
+LE1
+LE2
+LE3
+LF1
+LF2
+LF3
+LF4
+LF5
+LF2
+LC2
+Z1
+
+Bad Electrodes
+
+-
+
+

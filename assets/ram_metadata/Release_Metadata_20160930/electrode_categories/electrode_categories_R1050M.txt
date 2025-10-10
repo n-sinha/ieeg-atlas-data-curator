@@ -1,0 +1,20 @@
+R1050M
+
+Seizure Onset Zone
+
+LPG27
+LPG35
+LPG47
+
+Interictal Spikes
+
+LPG27
+LPG47
+LPG35
+LPG39
+
+Bad Electrodes
+
+-
+
+

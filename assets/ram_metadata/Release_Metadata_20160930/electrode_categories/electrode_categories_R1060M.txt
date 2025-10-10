@@ -1,0 +1,35 @@
+R1060M
+
+Seizure Onset Zone
+
+RTD2
+RMT13
+
+Interictal Spikes
+
+RPT1
+RPT2
+RPT3
+RPT4
+RPT5
+RPT6
+RPT7
+RPT8
+RPT9
+RPT10
+RPT11
+RPT12
+RPT13
+RPT14
+RST2
+RST3
+RST4
+RTD1
+RTD2
+RTD3
+
+Bad Electrodes
+
+-
+
+

@@ -1,0 +1,13 @@
+R1051J
+
+Seizure onset zone
+
+LIHG13
+
+Interictal
+
+LIHG13
+
+Bad electrodes
+
+LPA2

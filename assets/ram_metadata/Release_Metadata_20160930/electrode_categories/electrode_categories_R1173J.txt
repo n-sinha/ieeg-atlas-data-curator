@@ -1,0 +1,20 @@
+R1173J
+
+Seizure Onset Zone
+
+R2SM1
+R2SM2
+R2SM3
+
+Interictal Spikes
+
+R2SM1
+R2SM2
+R2SM3
+
+Bad Electrodes
+
+RI12
+RI13
+RI14
+RI15

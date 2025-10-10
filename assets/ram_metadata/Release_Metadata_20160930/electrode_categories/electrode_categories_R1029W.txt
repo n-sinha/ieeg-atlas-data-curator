@@ -1,0 +1,18 @@
+R1029W
+
+Seizure Onset Zone
+
+LPD1
+
+Interictal Spikes
+
+LPF1
+LPD2
+LLT4
+LLT5
+LLT6
+LLT12
+
+Bad Electrodes
+
+-

@@ -1,0 +1,30 @@
+R1166D
+
+Seizure Onset Zone
+LFPG6
+LFPG7
+
+Interictal Spikes
+
+LPFG21
+LFPG23
+LSFPG2
+LSFPG5
+PSD3
+LPD3
+LPD4
+LSD1
+LSD2
+LSD3
+LSD4
+LID1
+LID2
+LID3
+LID4
+
+Brain lesions
+None reported 
+
+Bad Electrodes
+LFPG15
+LFPG16

@@ -1,0 +1,28 @@
+R1154D
+
+Seizure onset zone:
+None reported
+
+Significant interitcal spiking:
+LOTD5
+LOTD1
+LOTD2
+LOTD3
+LOTD4
+LTCG18
+LTCG22
+LTCG23
+LTCG2
+LSTG9
+LSTG11
+
+Brain lesions:
+None reported
+
+Broken leads
+LTCG1
+LTCG3
+LTCG23
+
+
+

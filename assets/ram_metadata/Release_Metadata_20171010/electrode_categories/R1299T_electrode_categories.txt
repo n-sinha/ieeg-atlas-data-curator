@@ -1,0 +1,21 @@
+R1299T
+
+Ictal Onset:
+LB1
+LB2
+
+Interictal spiking:
+LB1
+LB2
+LC1
+LC2 
+RB1
+RB2
+RC1
+RC2 
+
+Brain lesions:
+NONE
+
+Broken leads:
+NONE

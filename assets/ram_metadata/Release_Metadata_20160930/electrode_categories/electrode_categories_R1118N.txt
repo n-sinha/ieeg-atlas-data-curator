@@ -1,0 +1,25 @@
+R1118N
+
+Seizure Onset Zone
+
+LID, LID 2 ,3,4
+PPST4,3
+TT1
+AST1
+MST1
+PST1
+G12
+
+Interictal Spikes
+
+TT4-5
+AST2/3,1/4
+MST1/2
+PST1
+MST3
+G1/2/3/9/10, 18/19
+TT1-4
+
+Bad Electrodes
+
+None reported

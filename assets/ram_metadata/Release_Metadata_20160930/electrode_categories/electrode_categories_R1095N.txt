@@ -1,0 +1,26 @@
+R1095N
+
+Seizure Onset Zone
+
+RTT1
+RTT3
+RTT4
+RAST1
+RMST1
+RPST1
+RPST2
+
+Interictal
+
+RTT1
+RTT2
+RTT3
+RTT4
+RTT5
+RAST1
+RMST1
+RPST1
+
+Bad electrodes
+
+None

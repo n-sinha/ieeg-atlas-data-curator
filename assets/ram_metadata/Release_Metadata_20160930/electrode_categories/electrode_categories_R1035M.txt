@@ -1,0 +1,46 @@
+R1035M
+
+Seizure Onset Zone
+
+LC1
+LC2
+RM1
+RM2
+RO1
+RO2
+
+Interictal Spikes
+
+LC1
+LC2
+LAD1
+LAD2
+LAD3
+LAD4
+LAD5
+LZ1
+LZ2
+LZ3
+LZ4
+LD1
+LD2
+LD5
+LD6
+LB1
+LB2
+LB3
+LX1
+LX2
+LX3
+LX4
+RO1
+RO2
+RM1
+RM2
+
+Bad Electrodes
+
+-
+
+***
+Right-sided contacts not included in jacksheet.

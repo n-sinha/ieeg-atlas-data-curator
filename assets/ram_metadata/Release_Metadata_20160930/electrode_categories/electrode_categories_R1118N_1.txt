@@ -1,0 +1,42 @@
+R1118N_1
+
+Seizure Onset Zones
+
+LID2
+LID3
+LID4
+PPST3
+PPST4
+TT1
+AST1
+MST1
+PST1
+G12
+
+Interictal Spikes
+
+TT4
+TT5
+AST1
+AST2
+AST3
+AST4
+MST1
+MST2
+MST3
+PST1
+G1
+G2
+G3
+G9
+G10
+G18
+G19
+TT1
+TT2
+TT3
+TT4
+
+Bad Electrodes
+
+-

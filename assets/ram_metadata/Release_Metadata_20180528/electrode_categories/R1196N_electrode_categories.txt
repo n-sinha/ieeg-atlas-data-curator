@@ -1,0 +1,18 @@
+R1196N
+
+Seizure Onset Zones
+
+IP1
+IP2
+AIP1
+AIP2
+AIP3
+
+interictal Spikes
+
+IP1
+IP2
+IP3
+AIP1
+AIP2
+AIP3

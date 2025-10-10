@@ -1,0 +1,52 @@
+R1170J
+
+Seizure Onset Zone
+
+LX3
+LX4
+LX5
+LX6
+LX7
+L1ST4
+L1ST5
+L1ST6
+L1ST7
+L1ST8
+L3ST6
+L7ST3
+L9ST1
+L9ST2
+L9ST3
+
+Interictal Spikes
+
+LY6
+LY7
+LY8
+LE9
+LE10
+LE11
+LE12
+
+Bad Electrodes
+
+LI1
+LI2
+LI3
+LI4
+LI5
+LI6
+LI7
+LI8
+LI9
+LI10
+LI11
+LI12
+LI13
+LI14
+LI15
+LI16
+
+Broken Leads
+
+NONE

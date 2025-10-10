@@ -1,0 +1,25 @@
+R1158T
+
+Seizure Onset Zone
+
+LA1
+LA2
+LI1
+LI2
+
+Interictal
+
+LB1
+LB2
+LB3
+LC1
+LC2
+LC3
+
+Brain lesions
+
+-
+
+Bad electrodes
+
+-

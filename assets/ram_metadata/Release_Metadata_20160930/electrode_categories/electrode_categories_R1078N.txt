@@ -1,0 +1,37 @@
+R1078N
+
+Seizure Onset Zone
+
+AT6
+AT7
+LP2
+PT
+LP1
+LP2
+LP3
+LP4
+LMIH2
+LPIH1
+
+Interictal 
+
+LP1
+LP2
+LP3
+LP4
+PT1
+PT2
+PT3
+PT4
+AT5
+AT6
+LPST1
+LPST3
+LPST4
+LAST4
+
+Bad electrodes
+
+None
+
+

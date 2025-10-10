@@ -1,0 +1,32 @@
+R1053M
+
+Seizure Onset Zone
+
+RPD1
+RPD2
+RPD3
+RPD4
+RAS1
+RAS2
+RAS3
+RAS4
+LPD1
+LPD2
+
+Interictal Spikes
+
+RPD1
+RPD2
+LPD1
+LPD2
+LPD3
+RTG5
+RTG6
+RTG20
+RTG21
+
+Bad Electrodes
+
+-
+
+

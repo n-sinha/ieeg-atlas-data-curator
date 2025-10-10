@@ -1,0 +1,34 @@
+R1044J
+
+Seizure onset zone
+
+LC1
+LC2
+LD1
+LD2
+LE1
+LE2
+
+Interictal Spikes
+
+LC1
+LC2
+LD1
+LD2
+LE1
+LE2
+LE3
+LE4
+LE5
+
+Bad electrodes
+
+LE2
+LE3
+LE4
+LE11
+LE12
+RF11
+RF12
+
+

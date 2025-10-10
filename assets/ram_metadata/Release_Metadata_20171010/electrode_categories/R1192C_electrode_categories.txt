@@ -1,0 +1,30 @@
+R1192C
+
+Ictal Onset:
+PMT6
+PMT7
+PMT8
+PMT9
+PMT10
+HB6
+HB7
+HB8
+PST10
+
+Interictal spiking:
+HB1
+HB2
+HB3
+TP1
+TP2
+PMT6
+PMT7
+PMT8
+PMT9
+PMT10
+
+Brain lesions:
+NONE
+
+Broken leads:
+NONE

@@ -1,0 +1,27 @@
+R1137E
+
+Seizure Onset Zones
+
+L11PHd1
+L11PHd2
+L9MHd1
+L9MHd2
+L9MHd3
+L7AHd1
+L7AHd2
+L7AHd3
+
+Interictal Spikes
+
+L11PHd1
+L11PHd2
+L9MHd1
+L9MHd2
+L9MHd3
+L7AHd1
+L7AHd2
+L7AHd3
+
+Bad Electrodes
+
+None reported.

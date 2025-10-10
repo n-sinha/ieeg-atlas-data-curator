@@ -1,0 +1,27 @@
+R1191J
+
+Ictal Onset:
+
+RY6
+RX12
+RX13
+RX14
+
+Interictal spiking:
+
+RA1
+RA2
+RA3
+RC1
+RC2
+RC3
+RD1
+RD2
+RD3
+
+
+Brain lesions:
+NONE
+
+Broken leads:
+NONE

@@ -1,0 +1,49 @@
+R1200T
+
+Ictal Onset:
+LR6
+LR7
+LR8
+LQ1
+LQ2
+LQ3 
+LB6
+LB7 
+
+Interictal spiking:
+LR6
+LR7
+LR8
+LQ1
+LQ2
+LQ3 
+LB6
+LB7 
+
+Brain lesions:
+LN6
+LN7
+LN8
+LZ4
+LZ5
+LQ8
+LQ9
+LQ10
+LR4
+LR5
+LR6
+LR7
+LR8
+LR9
+LR10
+LD5
+LD6
+LM5
+LM6
+LM7
+LM8
+LM9
+LM10
+
+Broken leads:
+NONE

@@ -1,0 +1,40 @@
+R1237C
+
+Ictal Onset:
+LAC8
+LAC9
+LAC10
+LAC11
+LAC12
+LAC13
+LAC14
+LOF9
+LOF10
+LOF11
+LOF12
+LOF13
+LOF14
+FP8
+FP9
+FP10
+
+
+Interictal spiking:
+LAC8
+LAC9
+LAC10
+LAC11
+LAC12
+LAC13
+LAC14
+LOF12
+LOF13
+FP9
+
+
+
+Brain lesions:
+NONE
+
+Broken leads:
+NONE

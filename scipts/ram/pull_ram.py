@@ -45,7 +45,9 @@ def download_ram_release(ram_input_dir: Path, dataset_id: str ):
     # check if the dataset is already downloaded
     if not dataset_dir.exists():
         # clone the data from openneuro
-        subprocess.run(["git", "clone", f"https://github.com/OpenNeuroDatasets/{dataset_id}.git", dataset_dir.absolute()], check=True)
+        subprocess.run(["git", "clone", 
+                        f"https://github.com/OpenNeuroDatasets/{dataset_id}.git", 
+                        dataset_dir.absolute()], check=True)
     else:
         logging.info(f"Dataset {dataset_id} already downloaded")
     
@@ -74,8 +76,10 @@ def download_curated_ram(patients_path_atlas: list[Path], ram_output_dir: Path):
         logging.info(f"Downloading patient {patient_path.name}")
         dataset_id = patient_path.parent.name + '/' + patient_path.name
         output_dir = ram_output_dir.joinpath(patient_path.name)
-        subprocess.run(["aws", "s3", "sync", "--no-sign-request", f"s3://openneuro.org/{dataset_id}", output_dir.absolute()], check=True)
-
+        subprocess.run(["aws", "s3", "sync", 
+                        "--no-sign-request", 
+                        f"s3://openneuro.org/{dataset_id}", 
+                        output_dir.absolute()], check=True)
 
 def main():
 

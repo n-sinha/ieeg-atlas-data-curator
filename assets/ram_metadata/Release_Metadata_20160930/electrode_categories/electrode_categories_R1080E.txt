@@ -1,0 +1,24 @@
+R1080E
+
+Seizure Onset Zone
+
+R6d1
+R4d1
+R4d2
+L1d8
+L1d9
+L1d10
+L3d8
+L3d9
+L3d10
+L7d7
+L7d9 
+
+Interictal Spikes
+
+L13d5
+L13d7
+
+Bad Electrodes
+
+-

@@ -1,0 +1,24 @@
+R1128E
+
+Seizure Onset Zone
+
+LAHcd1
+LAHcd2
+LAHcd3
+RlnfFs1
+
+Interictal Spikes
+
+RAHcd4
+RAHcd5
+RAntTs2
+RAntTs3
+RAntTs4
+LAHcd1
+LAHcd2
+LAHcd3
+LAHcd4
+
+Bad Electrodes
+
+-

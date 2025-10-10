@@ -1,0 +1,45 @@
+R1013E
+
+Seizure Onset Zone
+
+RLPOs2
+RLPOs3
+RLPOs4
+RLPOs5
+RLPOs6
+
+Interictal Spikes
+
+RLPOs1
+RLPOs3
+RLPOs5
+RLPOs7
+RLPOs9
+RLT1
+RLT3
+RLT5
+RLT7
+RMins7
+RMins9
+LMH1
+LMH2
+LMH3
+LMH4
+LMH5
+RAIns1
+RAIns3
+RPs1
+RMC7
+RMC9
+RPC5
+RPC7
+RPC9
+LAH1
+LAH3
+LAH5
+LAmy3
+
+Bad Electrodes
+
+-
+

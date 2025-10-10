@@ -1,0 +1,32 @@
+R1016M
+
+Seizure Onset Zone
+
+LIP4
+LIP5
+LIP6
+LIP11
+LIP12
+RIP15
+RIP16
+RIP17
+RIP18
+
+Interictal Spikes
+
+LFG63
+LFG64
+LSP1
+LSP2
+LPP3
+LPP4
+
+Bad Electrodes
+
+LOF6
+LOF7
+LOF8
+
+***
+The subgalial electrode with four contact electrodes facing outward toward the 
+galia was placed as a reference, external to the skull. 

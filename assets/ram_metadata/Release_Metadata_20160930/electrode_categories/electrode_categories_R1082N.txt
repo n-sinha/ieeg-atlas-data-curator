@@ -1,0 +1,35 @@
+R1082N
+
+Seizure Onset Zone
+
+RMST1
+
+Interictal
+
+G11
+G12
+G13
+G20
+G21
+G27
+G22
+G30
+G18
+G19
+G20
+G21
+G22
+G27
+G28
+G29
+RMST2
+RMST3
+RMST4
+RPST1
+RPST2
+
+Bad electrodes
+
+None
+
+

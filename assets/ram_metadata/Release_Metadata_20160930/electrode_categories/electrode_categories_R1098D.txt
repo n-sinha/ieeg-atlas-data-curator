@@ -1,0 +1,26 @@
+R1098D
+
+Seizure Onset Zone
+
+RFG09
+RFG10
+RFG11
+RFG12
+RFG13
+RIHG05
+RIHG06
+RIHG11
+RIHG12
+RPSS01
+RPSS02
+RPSS03
+
+Interictal
+
+RFG10
+RFG11
+RFG03
+
+Bad electrodes
+
+-

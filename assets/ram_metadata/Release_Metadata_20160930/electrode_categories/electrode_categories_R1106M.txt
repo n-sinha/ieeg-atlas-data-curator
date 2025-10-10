@@ -1,0 +1,31 @@
+R1106M
+
+Seizure Onset Zone
+
+-
+
+Interictal
+
+RAF2
+RAF3
+RAF4
+RAF5
+RAF6
+RPF6
+RPF7
+RPF8
+RPS6
+RPS7
+
+Bad electrodes
+
+RM6
+RA7
+RA8
+RA12
+RO13
+RO14
+RB1
+RB2
+RP25
+

@@ -1,0 +1,18 @@
+R1181E
+
+Seizure Onset Zones
+
+12Rd
+14Rd
+16Rd
+20Rd
+
+
+
+Interictal Spikes
+
+12Rd
+6Rd
+14Rd
+
+

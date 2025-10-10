@@ -1,0 +1,16 @@
+R1157C
+
+Seizure Onset Zone
+
+A
+IP
+
+Interictal
+
+HH
+OF
+ST
+
+Bad electrodes
+
+None

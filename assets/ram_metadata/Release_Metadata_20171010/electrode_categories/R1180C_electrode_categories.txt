@@ -1,0 +1,42 @@
+R1180C
+
+Ictal Onset:
+TPS6
+TPS7
+TPS9
+TPS10
+TPS11
+PST4
+PST5
+PST6
+PST7
+HH7
+HH8
+
+Interictal spiking:
+TPS1
+TPS2
+TPS3
+TPI1
+TPI2
+
+Brain lesions:
+NONE
+
+Broken leads:
+HH1
+HH2
+HH3
+HH4
+HH5
+HH6
+HH7
+HH8
+HB1
+HB2
+HB3
+HB4
+HB5
+HB6
+HB7
+HB8

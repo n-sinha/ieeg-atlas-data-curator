@@ -1,0 +1,23 @@
+R1171M
+
+Seizure Onset Zone
+
+RB1
+RB2
+
+Interictal Spikes
+
+RA1
+RA2
+RA3
+RA4
+RB1
+RB2
+RB3
+RB4
+RZ1
+RZ2
+
+Bad Electrodes
+
+RX14

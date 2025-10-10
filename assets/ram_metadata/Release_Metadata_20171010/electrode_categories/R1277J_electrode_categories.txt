@@ -1,0 +1,44 @@
+R1277J
+
+Ictal Onset:
+RPM7
+RPM8
+RPM9
+RMH1
+RMH2
+RMH3
+RMH4
+RMH5
+RMH6
+RMH7
+RMH8
+
+Significant Interictal Spiking:
+RPM7
+RPM8
+RPM9
+RMH1
+RMH2
+RMH3
+RMH4
+RMH5
+RMH6
+RMH7
+RMH8
+
+Brain Lesions:
+none
+
+Broken Leads:
+LS10
+RSAM9
+RSAM10
+RC8
+RC9
+RC10
+RC11
+RC12
+RPL9
+RPL10
+RPL11
+RPL12

@@ -1,0 +1,25 @@
+R1002P
+
+Seizure Onset Zone
+
+LIHG17
+LIHG18
+LIHG19
+LIHG10
+LIHG11
+
+Interictal Spikes
+
+LPS3
+LPS4
+LPS5
+LPS6
+LFG6
+LFG7
+LFG14
+LFG15
+LFG16
+
+Bad electrodes
+
+-

@@ -1,0 +1,25 @@
+R1017J
+
+Seizure onset zone
+
+LC1
+LC2
+LB1
+LB2
+LA1
+LA2
+
+Interictal Spikes
+
+-
+
+Bad Electrodes
+
+RJ1
+RJ2
+LC1
+LC2
+LA7
+LA8
+LB7
+LB8

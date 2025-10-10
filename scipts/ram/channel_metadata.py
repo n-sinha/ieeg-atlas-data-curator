@@ -2,13 +2,13 @@ import pandas as pd
 from pathlib import Path
 import re
 
-data_dir = Path(__file__).parent.parent.parent / "data"
+data_dir = Path(__file__).parent.parent.parent / "assets" / "ram_metadata"
 input_dirs = [
-    data_dir / "input" / "ram" / "Release_Metadata_20160930" / "electrode_categories",
-    data_dir / "input" / "ram" / "Release_Metadata_20171010" / "electrode_categories",
-    data_dir / "input" / "ram" / "Release_Metadata_20180528" / "electrode_categories",
+    data_dir / "Release_Metadata_20160930" / "electrode_categories",
+    data_dir / "Release_Metadata_20171010" / "electrode_categories",
+    data_dir / "Release_Metadata_20180528" / "electrode_categories",
 ]
-output_file = data_dir / "output" / "ram" / "channel_metadata.csv"
+output_file = Path(__file__).parent.parent.parent / "data" / "input" / "ram" / "channel_metadata.csv"
 
 # Known valid category names (normalized)
 VALID_CATEGORIES = {
@@ -93,4 +93,4 @@ df = df[existing_columns]
 
 df.to_csv(output_file, index=False)
 print(f"Saved to {output_file}")
-print(f"Shape: {df.shape}") 
+print(f"Shape: {df.shape}")

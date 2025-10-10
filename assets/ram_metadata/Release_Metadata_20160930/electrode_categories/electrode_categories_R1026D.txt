@@ -1,0 +1,27 @@
+R1026D
+
+Seizure Onset Zone
+
+LOTD1
+LOTD2
+LOTD3
+LOTD4
+LOTD5
+LOTD6
+LOTD7
+LOTD8
+
+Interictal Spikes
+
+LOSG3
+LOSG4
+LOSG11
+LOSG12
+LSL1
+LSL2
+LSL3
+LSL4
+
+Bad Electrodes
+
+-

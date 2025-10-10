@@ -1,0 +1,35 @@
+R1081J
+
+Seizure Onset Zone
+
+LC1
+LC2
+LC3
+LC4
+
+Interictal Spikes
+
+LSTA1
+LSTA2
+LSTA3
+LSTA4
+LC1
+LC2
+LC3
+LC4
+LD1
+LD2
+LD3
+LD4
+LA1
+LA2
+LA3
+LA4
+
+Bad Electrodes
+
+LA11
+LA12
+LA13
+
+

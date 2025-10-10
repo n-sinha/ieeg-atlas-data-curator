@@ -1,0 +1,18 @@
+R1164E
+
+Seizure Onset Zone
+
+LAHd3
+
+Interictal Spikes
+
+LAHd1
+LAHd2
+LAHd3
+RAHd1
+RAHd2
+RAHd3
+
+Bad Electrodes
+
+none reported

@@ -1,0 +1,28 @@
+R1052E_2
+
+Seizure Onset Zone
+
+RSMACd3
+RSMACd4
+
+Interictal Spikes
+
+RSMACd2
+RSMACd3
+RSMACd4
+RSMACd5
+1RPRd3
+1RPRd4
+1RPRd5
+1LPRd3
+1LPRd4
+5RPRd2
+5RPRd3
+5RPRd4
+5RPRd5
+5RPRd6
+
+Bad Electrodes
+
+-
+

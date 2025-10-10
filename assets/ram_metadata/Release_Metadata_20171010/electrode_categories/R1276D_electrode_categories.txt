@@ -1,0 +1,15 @@
+R1276D
+
+Seizure Onset Zones
+
+LAHD2
+LAHD3
+LPHD2
+LPHD3
+
+interictal Spikes
+
+LAHD2
+LAHD3
+LAHD8
+LAHD9

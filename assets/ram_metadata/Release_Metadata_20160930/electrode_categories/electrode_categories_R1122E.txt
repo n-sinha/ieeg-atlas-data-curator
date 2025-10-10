@@ -1,0 +1,29 @@
+R1122E
+
+Seizure Onset Zone
+
+L5AHd1
+L5AHd2
+L5AHd3
+L5AHd4
+L7MHd1
+L7MHd2
+L7MHd3
+L9PHd1
+L9PHd2
+
+Interictal Spikes
+
+L5AHd1
+L5AHd2
+L5AHd3
+L5AHd4
+L7MHd1
+L7MHd2
+L7MHd3
+L9PHd1
+L9PHd2
+
+Bad Electrodes
+
+-

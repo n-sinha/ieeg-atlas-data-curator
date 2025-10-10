@@ -1,0 +1,32 @@
+R1022J
+
+Seizure onset zone
+
+LH1
+LH2
+LH3
+LPIL1
+LPIL2
+LPIL3
+LPIL4
+LPIL5
+
+Interictal Spikes
+
+LH6
+LH7
+LH8
+LH9
+LAIL8
+LAIL9
+LC2
+LC3
+LB2
+LB3
+LO2
+LO3
+LO4
+
+Bad electrodes
+
+-

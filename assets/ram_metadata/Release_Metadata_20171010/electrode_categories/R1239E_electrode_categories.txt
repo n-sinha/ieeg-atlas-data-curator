@@ -1,0 +1,21 @@
+R1239E
+
+Seizure Onset Zones
+
+18Rd2 
+20Rd2
+20Rd3
+
+interictal Spikes
+
+8Rd1
+2Rd1
+2Rd3
+
+Broken leads 
+
+18Rd1
+18Rd3
+18Rd4
+18Rd7
+8Rd2

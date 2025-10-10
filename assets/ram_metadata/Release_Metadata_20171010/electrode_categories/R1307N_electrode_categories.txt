@@ -1,0 +1,22 @@
+R1307N
+
+Seizure Onset Zones
+
+LPHD1
+LPHD2
+LAHD2
+LAHD3
+LAD2
+LAD3
+LAD4
+RAHD2
+RAHD3
+RAD4
+RAD5
+RAD6
+
+Interictal
+
+
+LPST1
+LPST2

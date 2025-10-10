@@ -1,0 +1,29 @@
+R1142N
+
+Seizure Onset Zone
+
+PD1
+PD2
+PD3
+AD1
+AD2
+AALF1
+AALF2
+MLF2
+
+Interictal
+
+PD1
+PD2
+PD3
+AD1
+AD2
+AD3
+AALPF1
+AALPF2
+RPIH1
+MLF2
+
+Bad electrodes
+
+None

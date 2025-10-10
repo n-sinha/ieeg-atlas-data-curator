@@ -1,0 +1,18 @@
+R1129D
+
+Seizure Onset Zone
+
+LIHG4
+LIHG5
+LIHG12
+LIHG13
+
+Interictal Spikes
+
+LIHG4
+LIHG12
+LIHG13
+
+Bad Electrodes
+
+-

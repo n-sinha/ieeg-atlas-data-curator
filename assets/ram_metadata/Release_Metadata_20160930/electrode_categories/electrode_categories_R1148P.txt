@@ -1,0 +1,42 @@
+R1148P
+
+Seizure Onset Zone
+
+RA1
+RA2
+RA3
+RH2
+RH3
+RH4
+RCC1
+RCC2
+RCC3
+RCC4
+
+Interictal Spikes
+
+RCC1
+RCC2
+RCC3
+RCC4
+RA1
+RA2
+RA3
+RA4
+RH2
+RH3
+RH4
+RCB2
+RCB3
+RCB4
+RCA2
+RCA3
+RCA4
+RPFB1
+RPFB2
+RPFB3
+RPFB4
+
+Bad Electrodes
+
+None

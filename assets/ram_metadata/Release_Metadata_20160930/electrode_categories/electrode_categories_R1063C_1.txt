@@ -1,0 +1,25 @@
+R1063C_1
+
+Seizure onset zone
+
+LHT4
+LHT5
+LHT6
+
+Interictal
+
+LHB1
+LHB2
+LHB3
+LHT6
+LHT7
+LHH1
+LHH2
+LHH3
+LHH4
+LA1
+LA2
+
+Bad electrodes
+
+-

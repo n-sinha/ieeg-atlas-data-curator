@@ -1,0 +1,44 @@
+R1120E
+
+Seizure Onset Zone
+
+RAmyd1
+RAmyd2
+RAmyd3
+RAmyd4
+RAmyd5
+RAHd1
+RAHd2
+RAHd3
+RAHd4
+RMHd1
+RMHd2
+RMHd3
+
+Interictal Spikes
+
+LAmyd1
+LAmyd2
+LAmyd3
+LPHD2
+LPHD3
+LPHD4
+LFarPd1
+LFarPd2
+LFarPd3
+RAmyd1
+RAmyd2
+RAmyd3
+RAmyd4
+RAmyd5
+RAHd1
+RAHd2
+RAHd3
+RMHd1
+RMHd2
+RMHd3
+
+Bad Electrodes
+
+-
+

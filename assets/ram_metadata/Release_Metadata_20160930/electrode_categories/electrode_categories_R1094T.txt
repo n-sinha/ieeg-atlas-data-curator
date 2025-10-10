@@ -1,0 +1,34 @@
+R1094T
+
+Seizure Onset Zone
+
+LP6
+LB1
+LB2
+LB3
+LB4
+LC1
+LC2
+LC3
+LC4
+
+Interictal Spikes
+
+LB1
+LB2
+LB3
+LB4
+LC1
+LC2
+LC3
+LC4
+LC5
+RB1
+RB2
+RB3
+RB4
+RB5
+
+Bad Electrodes
+
+-

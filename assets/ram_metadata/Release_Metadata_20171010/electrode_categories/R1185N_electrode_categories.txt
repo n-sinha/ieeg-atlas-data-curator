@@ -1,0 +1,21 @@
+R1185N
+
+Seizure Onset Zones
+
+TG15
+TG16
+TG23
+TG24
+SO6
+
+
+interictal Spikes
+
+TG2
+TG3
+TG4
+TG5
+TG9
+TG10
+TG11
+TG12

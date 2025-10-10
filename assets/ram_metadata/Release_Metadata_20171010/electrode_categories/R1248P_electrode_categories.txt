@@ -1,0 +1,29 @@
+R1248P
+
+Seizure Onset Zones
+
+RE1
+
+Interictal Spikes
+
+RG5
+RG6
+RG7
+RF7
+RF8
+
+Broken leads
+
+RD8
+RH2
+RH3
+RH4
+RH5
+RH6
+RH7
+RH8
+RH9
+RFL1
+LA1
+LB4
+LB6

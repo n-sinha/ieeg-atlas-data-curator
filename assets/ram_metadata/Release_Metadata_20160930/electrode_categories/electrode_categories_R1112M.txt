@@ -1,0 +1,33 @@
+R1112M
+
+Seizure Onset Zone
+
+RAD1
+RAD2
+RMD1
+RMD2
+RMD3
+RPD1
+RPD2
+RAS1
+RAS2
+
+Interictal Spikes
+
+RMD1
+RMD2
+RPD1
+RPD2
+RAS1
+RTG6
+RTG20
+
+Bad Electrodes
+
+RASD3
+RASD4
+RPSD4
+RTG23
+RTG24
+RIF8
+RSS4

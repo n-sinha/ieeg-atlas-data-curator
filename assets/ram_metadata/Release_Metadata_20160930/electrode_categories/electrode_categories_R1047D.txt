@@ -1,0 +1,25 @@
+R1047D
+
+Seizure Onset Zone
+
+LPTG21
+LPTG22
+LPTG23
+LPTG24
+LFPG4
+LFPG5
+LFPG6
+LOTD1
+LOTD2
+LOTD3
+LOTD4
+LOTD5
+LOTD6
+
+Interictal Spikes
+
+LPTG (general)
+
+Bad Electrodes 
+
+-

@@ -1,0 +1,52 @@
+R1024E_2
+
+Seizure Onset Zone
+
+RPG35
+RPG36
+RPG37
+RPG53
+RPG54
+RLOs5
+RLOs6
+RLOPa1
+RLOPa2
+RLOPa3
+RLOPa4
+LOC4
+
+Early spread
+
+LMH2
+LMH3
+LMH6
+LMH7
+LPH1
+LPH2
+
+Interictal Spikes
+
+RLOs4
+RLTs1
+RLTs2
+RLTs3
+RLTs4
+LOC3
+LOC4
+RLOPa1
+RLOPa2
+RLOPa3
+RLOPa4
+RLOAa1
+RLOAa2
+RLOAa3
+RLOAb3
+RLOAb4
+RLOPa1
+RLOPa2
+RLOPa3
+RLOPa4
+
+Bad Electrodes
+
+-

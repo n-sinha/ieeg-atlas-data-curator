@@ -1,0 +1,23 @@
+R1079E
+
+Seizure Onset Zone
+
+L15d3
+LPTs3
+LPTs5
+LATs1
+
+Interictal 
+
+L15d1
+L15d2
+L15d3
+R16d1
+R16d2
+R16d3
+
+Bad electrodes
+
+None
+
+

@@ -1,0 +1,33 @@
+R1266J
+
+Seizure Onset Zones
+
+LA1
+LA2
+LA3
+LB1
+LB2
+
+Interictal Spikes
+
+LA1
+LA2
+LA3
+LB1
+LB2
+
+Brain lesion
+
+LFF2
+LFF3
+LFF4
+LJ3
+LJ4
+
+Broken leads
+
+LD11
+LD12
+LSH13
+LSH14
+
