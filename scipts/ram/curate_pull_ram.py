@@ -11,7 +11,14 @@ logging.basicConfig(
 )
 
 #%%
-def curate_ram(channel_metadata: pd.DataFrame):
+def clean_ram_metadata(channel_metadata: pd.DataFrame):
+    """Clean the RAM channel metadata
+    Args:
+        channel_metadata: pandas DataFrame containing the channel metadata
+
+    Returns:
+        pandas DataFrame containing the curated channel metadata
+    """
 
     # remove patients that have all of these columns empty
     channel_metadata = channel_metadata[channel_metadata['Seizure Onset Zone'].notna() | 
@@ -32,24 +39,28 @@ def curate_ram(channel_metadata: pd.DataFrame):
     # Add a new columun as site which will have the last letter of the ram_id
     channel_metadata['site'] = channel_metadata.index.str[-1]
 
-    # remove patients that are from site "P" which are Penn patients
+    logging.info(f"Removing patients that are from 'Penn' in RAM dataset")
     channel_metadata = channel_metadata[channel_metadata['site'] != 'P']
 
     return channel_metadata
 
-def download_ram_release(ram_input_dir: Path, dataset_id: str ):
+def git_clone(directory: Path, dataset_id: str ):
 
     # create a new directory for the dataset
-    dataset_dir = ram_input_dir / dataset_id
+    dataset_dir = directory / dataset_id
 
-    # check if the dataset is already downloaded
-    if not dataset_dir.exists():
-        # clone the data from openneuro
-        subprocess.run(["git", "clone", 
-                        f"https://github.com/OpenNeuroDatasets/{dataset_id}.git", 
-                        dataset_dir.absolute()], check=True)
+
+    # clone the data from openneuro
+    if dataset_dir.exists():
+        # Pull latest changes if directory exists
+        logging.info(f"Pulling latest changes for {dataset_id}")
+        subprocess.run(["git", "-C", dataset_dir.absolute(), "pull"], check=True)
     else:
-        logging.info(f"Dataset {dataset_id} already downloaded")
+        # Clone if directory doesn't exist
+        logging.info(f"Cloning {dataset_id}")
+        subprocess.run(["git", "clone", 
+                    f"https://github.com/OpenNeuroDatasets/{dataset_id}.git", 
+                    dataset_dir.absolute()], check=True)
     
     # make a list of all patients in this dataset which starts with sub-
     patients_paths = [patient for patient in dataset_dir.glob('sub-*') if patient.is_dir()]
@@ -59,18 +70,27 @@ def download_ram_release(ram_input_dir: Path, dataset_id: str ):
 def curate_ram_patients(patients_paths: list[Path], channel_metadata: pd.DataFrame):
 
     patients_paths_all = [patient.name for  patient in patients_paths]
+    logging.info(f"Found {len(patients_paths_all)} patients across all ram datasets")
 
     patients_with_metadata =  channel_metadata.index.unique().tolist()
+    logging.info(f"{len(patients_with_metadata)} patients have channel level metadata")
 
     # for each patient in patients_with_metadata check if there is patient.name in patient path
     patients_paths_atlas = []
     for patient in patients_with_metadata:
         if patient in patients_paths_all:
             patients_paths_atlas.append(patients_paths[patients_paths_all.index(patient)])
+    logging.info(f"{len(patients_paths_atlas)} patients with channel metadata in assests are in the ram datasets")
 
     return patients_paths_atlas
 
-def download_curated_ram(patients_path_atlas: list[Path], ram_output_dir: Path):
+def pull_ram_data(patients_path_atlas: list[Path], ram_output_dir: Path, num_patients: int = None):
+
+    if num_patients is not None:
+        patients_path_atlas = patients_path_atlas[:num_patients]
+        logging.info(f"Downloading {num_patients} patients")
+    else:
+        logging.info(f"Downloading all {len(patients_path_atlas)} patients locally")
 
     for patient_path in patients_path_atlas:
         logging.info(f"Downloading patient {patient_path.name}")
@@ -81,30 +101,35 @@ def download_curated_ram(patients_path_atlas: list[Path], ram_output_dir: Path):
                         f"s3://openneuro.org/{dataset_id}", 
                         output_dir.absolute()], check=True)
 
-def main():
+def main(n_patients: int = None):
 
-    ram_input_dir = Path(__file__).parent.parent.parent / "data" / "input" / "ram"
-    ram_output_dir = Path(__file__).parent.parent.parent / "data" / "output" / "ram"
-    channel_metadata_file = ram_output_dir / "channel_metadata.csv"
+    project_root = Path(__file__).parent.parent.parent
+
+    ram_input_dir = project_root / "data" / "input" / "ram"
+    ram_output_dir = project_root / "data" / "output" / "ram"
+    channel_metadata_file = ram_input_dir / "channel_metadata.csv"
     channel_metadata = pd.read_csv(channel_metadata_file)
 
-    channel_metadata = curate_ram(channel_metadata)
+    channel_metadata = clean_ram_metadata(channel_metadata)
 
     # clone data from openneuro
-    ram_datasets = pd.read_csv(ram_input_dir / "openneuro_release.csv")['dataset_id'].tolist()
+    ram_datasets = pd.read_csv(project_root / 
+                               "assets" / 
+                               "ram_metadata" / 
+                               "openneuro_release_ram.csv")['dataset_id'].tolist()
 
     patients_paths = []
 
     # download the data from openneuro
     for dataset_id in ram_datasets:
-        patients_paths_dataset = download_ram_release(ram_input_dir, dataset_id)
-        patients_paths.extend(patients_paths_dataset) 
+        patients_paths_dataset = git_clone(directory=ram_input_dir, dataset_id=dataset_id)
+        patients_paths.extend(patients_paths_dataset)
 
     # curate the patients
     patients_path_atlas = curate_ram_patients(patients_paths, channel_metadata)
 
     # download the data from openneuro
-    download_curated_ram(patients_path_atlas, ram_output_dir)  
+    pull_ram_data(patients_path_atlas, ram_output_dir, num_patients=n_patients)  
 
 #%%
 if __name__ == "__main__":

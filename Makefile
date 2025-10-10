@@ -15,6 +15,7 @@ run:
 	mkdir -p data/output/ram/
 	uv run scipts/ram/channel_metadata.py
 	uv run scipts/ram/channel_metadata_check.py
+	uv run scipts/ram/curate_pull_ram.py --n-patients 5
 
 clean:
 	rm -rf data/input/ram/
