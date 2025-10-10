@@ -15,6 +15,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
+#%%
 def is_not_empty(value):
     """Check if a value is not empty/missing"""
     if pd.isna(value):  # Handles NaN, None
@@ -54,7 +55,8 @@ def get_task_onsets(data_dir: Path) -> list:
 #%%
 
 def main():
-    start_task_onsets = get_task_onsets(Path("data/output/ram"))
+    project_root = Path(__file__).parent.parent.parent
+    start_task_onsets = get_task_onsets(project_root / "data" / "output" / "ram")
 
     # get all edf files from ses 0 in the data/output/ram directory
     edf_files = list(Path("data/output/ram").rglob("**/*ieeg*/*ses-0*bipolar*.edf"))
