@@ -14,6 +14,7 @@ dependencies = [
     "mne[hdf5]>=1.10.1",
     "neuroconv[edf]>=0.7.5",
     "neurosift>=0.2.13",
+    "nibabel>=5.3.2",
     "openpyxl>=3.1.5",
     "plotly>=5.24.1",
     "pyqt6>=6.9.1",

@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import logging
 import shutil
+import nibabel as nib
+from nibabel.affines import apply_affine
 
 from pathlib import Path
 from curate_pull_ram import clean_ram_metadata
@@ -109,30 +111,50 @@ class StandardizeRAM:
         shutil.copytree(subject_dir, self.subject_dir.parent / "BIDS" / subject_dir.name / "derivatives" / "ieeg-clips" / "ses-task", dirs_exist_ok=True)
         logging.info(f"Subject directory moved to {self.subject_dir.parent / 'BIDS' / subject_dir.name / 'derivatives' / 'ieeg-clips' / 'ses-task'}")
 
-    def curate_ieeg_recon(self):
+    def curate_ieeg_recon(self, project_root: Path):
         self.standardize_directory_structure()
         subject_id = self.subject_dir.name
-        output_dir = self.subject_dir.parent / "BIDS" / subject_id / "derivatives" / "ieeg-recon"
+        output_dir = self.subject_dir.parent / "BIDS" / subject_id / "derivatives" / "ieeg-recon" / 'module4'
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # MNI152 template path (using FreeSurfer templates)
+        mni152_template = Path(project_root) / 'assets' / 'freesurfer' / 'cvs_avg35_inMNI152' / 'mri' / 'T1.mgz'
+        mni152_template_nii = Path(project_root) / 'assets' / 'freesurfer' / 'cvs_avg35_inMNI152' / 'mri' / 'T1.nii.gz'
+
+        mni152_template = nib.load(mni152_template)
+        xform_mni152_tk_ras = mni152_template.header.get_vox2ras_tkr()
+
+        mni152_img = nib.load(mni152_template_nii)
 
         # get electrodes.tsv file from ses 0 in the data/output/ram directory
-        electrodes_tsv_file = list(self.subject_dir.rglob("**/*ieeg*/*ses-0*_electrodes.tsv"))
-        logging.info(f"Found {len(electrodes_tsv_file)} electrodes.tsv files in ses 0")
+        electrodes_tsv_file = list(self.subject_dir.rglob("**/*ieeg*/*ses-0*_electrodes.tsv"))[0]
+        electrodes = pd.read_csv(electrodes_tsv_file, sep="\t")
+        electrodes = electrodes.rename(columns={'name': 'labels', 'x': 'mm_x', 'y': 'mm_y', 'z': 'mm_z'})
 
-        for electrodes_tsv_file in electrodes_tsv_file:
-            # read the electrodes.tsv file
-            electrodes = pd.read_csv(electrodes_tsv_file, sep="\t")
-
-            # rename name column to labels, x, y, z columns to mm_x, mm_y, mm_z
-            electrodes = electrodes.rename(columns={'name': 'labels', 'x': 'mm_x', 'y': 'mm_y', 'z': 'mm_z'})
-
-            # pass electrodes to create ieeg-recon module 4 csv file
-            electrodes_recon = self.create_ieeg_recon_module_4_csv(electrodes)
-            logging.info(f"Created ieeg-recon module 4 csv file for {electrodes_tsv_file.name}")
-
-    def create_ieeg_recon_module_4_csv(self, electrodes: pd.DataFrame):
+        # Convert world coordinates in mm to voxel space
+        mm_coords = electrodes[['mm_x', 'mm_y', 'mm_z']]
         
+        # MNI152 world coordinates (mm) -> voxel coordinates
+        voxel_coords = nib.affines.apply_affine(np.linalg.inv(mni152_img.affine), mm_coords)
 
-        pass
+        # Voxel coordinates -> FreeSurfer surface RAS coordinates (mm)
+        electrodes_homog = np.hstack((voxel_coords, np.ones((voxel_coords.shape[0], 1))))
+        electrodes_surfmm = np.round(np.dot(xform_mni152_tk_ras, electrodes_homog.T).T[:, :3], decimals=4)
+
+        # Add transformed coordinates to electrodes dataframe
+        electrodes['surfmm_x'] = electrodes_surfmm[:, 0]
+        electrodes['surfmm_y'] = electrodes_surfmm[:, 1]
+        electrodes['surfmm_z'] = electrodes_surfmm[:, 2]
+
+        electrodes['vox_x'] = (voxel_coords[:, 0]).astype(int)
+        electrodes['vox_y'] = (voxel_coords[:, 1]).astype(int)
+        electrodes['vox_z'] = (voxel_coords[:, 2]).astype(int)
+
+        drop_columns = ['size', 'group', 'hemisphere', 'type', 'tal.x', 'tal.y', 'tal.z', 'ind.region', 'das.region', 'stein.region']
+        electrodes = electrodes.drop(columns=drop_columns)
+
+        return electrodes
+    
 
 
 
@@ -154,7 +176,7 @@ def main():
     standardize_ram = StandardizeRAM(openneuro_subject_dir=data_dir, channel_metadata=channel_metadata)
     standardize_ram.curate_interictal_ieeg(start_time=0.0, end_time=135.0)
     standardize_ram.curate_task_ieeg()
-    standardize_ram.curate_ieeg_recon()
+    standardize_ram.curate_ieeg_recon(project_root=project_root)
     
 #%%
 
