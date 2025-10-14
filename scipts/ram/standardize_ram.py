@@ -10,6 +10,8 @@ import logging
 import shutil
 import nibabel as nib
 from nibabel.affines import apply_affine
+import subprocess
+import os
 
 from pathlib import Path
 from curate_pull_ram import clean_ram_metadata
@@ -62,7 +64,7 @@ class StandardizeRAM:
         # Create all derivative directories
         (self.subject_dir.parent / "BIDS" / subject_id / 'derivatives' / 'ieeg-clips' / 'ses-interictal').mkdir(parents=True, exist_ok=True)
         (self.subject_dir.parent / "BIDS" / subject_id / 'derivatives' / 'ieeg-clips' / 'ses-task').mkdir(parents=True, exist_ok=True)
-        (self.subject_dir.parent / "BIDS" / subject_id / 'derivatives' / 'ieeg-recon').mkdir(parents=True, exist_ok=True)
+        (self.subject_dir.parent / "BIDS" / subject_id / 'derivatives' / 'ieeg_recon').mkdir(parents=True, exist_ok=True)
         logging.info(f"Sirectory structure standardized for {subject_id} in {self.subject_dir.parent / 'BIDS'}")
 
     def curate_interictal_ieeg(self, start_time=0.0, end_time=135.0):
@@ -111,22 +113,124 @@ class StandardizeRAM:
         shutil.copytree(subject_dir, self.subject_dir.parent / "BIDS" / subject_dir.name / "derivatives" / "ieeg-clips" / "ses-task", dirs_exist_ok=True)
         logging.info(f"Subject directory moved to {self.subject_dir.parent / 'BIDS' / subject_dir.name / 'derivatives' / 'ieeg-clips' / 'ses-task'}")
 
-    def curate_ieeg_recon(self):
+    def curate_ieeg_recon(self, project_root: Path):
 
-        electrodes_tsv_files = list(self.subject_dir.rglob("**/*ieeg*/*ses-0*_electrodes.tsv"))
-
-        electrodes = pd.DataFrame()
+        subject_id = self.subject_dir.name
+        output_dir = self.subject_dir.parent / "BIDS" / subject_id / 'derivatives' / 'ieeg_recon' / 'module2'
+        output_dir.mkdir(parents=True, exist_ok=True)
         
-        for electrodes_tsv_file in electrodes_tsv_files:
-            electrodes_temp = pd.read_csv(electrodes_tsv_file, sep="\t")
-            electrodes_temp = electrodes_temp.filter(items=['name', 'tal.x', 'tal.y', 'tal.z'])
-            electrodes = pd.concat([electrodes, electrodes_temp])
+        electrodes_tsv_files = list(self.subject_dir.rglob("**/*ieeg*/*ses-0*_electrodes.tsv"))[0]
+        electrodes = pd.read_csv(electrodes_tsv_files, sep="\t")
+        electrodes = electrodes.filter(items=['name', 'tal.x', 'tal.y', 'tal.z'])
+        
+        # Create output file for coordinates in MRI space
+        output_file = output_dir / 'electrodes_inMRImm.txt'
 
-        df_surf = electrodes[['tal.x', 'tal.y', 'tal.z']]
-        df_surf['colors'] = 1
-        df_surf['size'] = 1
-        df_surf['roi'] = electrodes['name']
-        return df_surf, electrodes
+        # Write coordinates in MRI space format
+        with open(output_file, 'w') as f:
+            # Write header
+            f.write('Coordinates in Destination volume (in mm)\n')
+            
+            # Write coordinates with proper spacing
+            for _, row in electrodes.iterrows():
+                coord_line = f"{row['tal.x']:8.4f}  {row['tal.y']:8.4f}  {row['tal.z']:8.4f}\n"
+                f.write(coord_line)
+        
+        logging.info(f"Electrode coordinates saved to {output_file}")
+
+        talariach_t1 = project_root / 'assets' / 'freesurfer' / 'fsaverage' / 'mri' / 'T1.mgz'
+        talariach_t1 = nib.load(talariach_t1)
+        electrodes_vox = apply_affine(np.linalg.inv(talariach_t1.affine), electrodes[['tal.x', 'tal.y', 'tal.z']])
+        electrodes_vox = np.round(electrodes_vox).astype(int)
+        
+        # Create output file for coordinates in voxel space
+        output_file_vox = output_dir / 'electrodes_inMRIvox.txt'
+
+        # Write coordinates in voxel space format
+        with open(output_file_vox, 'w') as f:
+            # Write header
+            f.write('Coordinates in Destination volume (in voxels)\n')
+            
+            # Write coordinates with proper spacing (matching the format from electrodes_inMRIvox.txt)
+            for coord in electrodes_vox:
+                coord_line = f"{coord[0]:8.3f}  {coord[1]:8.3f}  {coord[2]:8.3f}\n"
+                f.write(coord_line)
+
+        logging.info(f"Electrode coordinates in voxel space saved to {output_file_vox}")
+
+        # export electrode names in module1 
+        output_file_module1 = output_dir.parent / 'module1' / 'electrode_names.txt'
+        output_file_module1.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_file_module1, 'w') as f:
+            f.write('\n'.join(electrodes['name']))
+        logging.info(f"Electrode names saved to {output_file_module1}")
+
+    def run_ieeg_recon_docker(self, project_root: Path):
+        """
+        Run iEEG reconstruction modules 3 and 4 using Docker container.
+        This method sets up the required input files and runs the Docker container.
+        """
+        subject_id = self.subject_dir.name
+        output_dir = self.subject_dir.parent / "BIDS" / subject_id / 'derivatives'
+        
+        # Create input directory for Docker container
+        input_dir = output_dir / 'docker_input'
+        input_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Paths for required files
+        t1_path = project_root / 'assets' / 'freesurfer' / 'fsaverage' / 'mri' / 'T1.nii.gz'
+        freesurfer_dir = project_root / 'assets' / 'freesurfer' / 'fsaverage'
+        
+        # Create dummy CT file (copy T1 as CT since CT is not required but may cause errors)
+        dummy_ct_path = input_dir / 'CT.nii.gz'
+        if not dummy_ct_path.exists():
+            shutil.copy2(t1_path, dummy_ct_path)
+            logging.info(f"Created dummy CT file: {dummy_ct_path}")
+        
+        # Create dummy electrodes file
+        dummy_electrodes_path = input_dir / 'electrodes.txt'
+        if not dummy_electrodes_path.exists():
+            with open(dummy_electrodes_path, 'w') as f:
+                f.write("# Dummy electrodes file\n")
+                f.write("1 0 0 0\n")  # Single dummy electrode
+            logging.info(f"Created dummy electrodes file: {dummy_electrodes_path}")
+        
+        # Copy T1 to input directory
+        t1_input_path = input_dir / 'T1.nii.gz'
+        if not t1_input_path.exists():
+            shutil.copy2(t1_path, t1_input_path)
+            logging.info(f"Copied T1 file to: {t1_input_path}")
+        
+        # Copy freesurfer directory to input directory
+        freesurfer_input_dir = input_dir / 'freesurfer'
+        if not freesurfer_input_dir.exists():
+            shutil.copytree(freesurfer_dir, freesurfer_input_dir)
+            logging.info(f"Copied freesurfer directory to: {freesurfer_input_dir}")
+        
+        # Build Docker command
+        docker_cmd = [
+            'docker', 'run',
+            '-v', f"{input_dir.absolute()}:/data/input",
+            '-v', f"{output_dir.absolute()}:/data/output",
+            'nishantsinha89/ieeg_recon:latest',
+            '--t1', '/data/input/T1.nii.gz',
+            '--ct', '/data/input/CT.nii.gz',
+            '--elec', '/data/input/electrodes.txt',
+            '--freesurfer-dir', '/data/input/freesurfer',
+            '--output-dir', '/data/output',
+            '--skip-existing',
+            '--modules', '3'
+        ]
+        
+        logging.info(f"Running Docker command for iEEG reconstruction module 3...")
+        logging.info(f"Command: {' '.join(docker_cmd)}")
+        
+        subprocess.run(docker_cmd, check=True)
+        # delete docker input
+        shutil.rmtree(input_dir, ignore_errors=True)
+        logging.info("Docker command completed successfully!")
+
+
 
 #%%
 
@@ -141,12 +245,13 @@ def is_not_empty(value):
 def main():
     project_root = Path(__file__).parent.parent.parent
     channel_metadata = project_root / "data" / "input" / "ram" / "channel_metadata.csv"
-    data_dir = project_root / "data" / "output" / "ram"
+    data_dir = project_root / "data" / "output" / "ram" / "sub-R1010J"
     standardize_ram = StandardizeRAM(openneuro_subject_dir=data_dir, channel_metadata=channel_metadata)
     # standardize_ram.curate_interictal_ieeg(start_time=0.0, end_time=135.0)
     # standardize_ram.curate_task_ieeg()
-    df_surf, electrodes = standardize_ram.curate_ieeg_recon()
-    df_surf.to_csv(project_root / "data" / "output" / "ram" / "electrodes2ROI.node", sep=' ', index=False, header=False)
+    standardize_ram.curate_ieeg_recon(project_root=project_root)
+    # Run Docker container for iEEG reconstruction modules 3 and 4
+    standardize_ram.run_ieeg_recon_docker(project_root=project_root)
     
 #%%
 
