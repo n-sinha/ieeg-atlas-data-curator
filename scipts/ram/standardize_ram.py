@@ -111,53 +111,22 @@ class StandardizeRAM:
         shutil.copytree(subject_dir, self.subject_dir.parent / "BIDS" / subject_dir.name / "derivatives" / "ieeg-clips" / "ses-task", dirs_exist_ok=True)
         logging.info(f"Subject directory moved to {self.subject_dir.parent / 'BIDS' / subject_dir.name / 'derivatives' / 'ieeg-clips' / 'ses-task'}")
 
-    def curate_ieeg_recon(self, project_root: Path):
-        self.standardize_directory_structure()
-        subject_id = self.subject_dir.name
-        output_dir = self.subject_dir.parent / "BIDS" / subject_id / "derivatives" / "ieeg-recon" / 'module4'
-        output_dir.mkdir(parents=True, exist_ok=True)
+    def curate_ieeg_recon(self):
 
-        # MNI152 template path (using FreeSurfer templates)
-        mni152_template = Path(project_root) / 'assets' / 'freesurfer' / 'cvs_avg35_inMNI152' / 'mri' / 'T1.mgz'
-        mni152_template_nii = Path(project_root) / 'assets' / 'freesurfer' / 'cvs_avg35_inMNI152' / 'mri' / 'T1.nii.gz'
+        electrodes_tsv_files = list(self.subject_dir.rglob("**/*ieeg*/*ses-0*_electrodes.tsv"))
 
-        mni152_template = nib.load(mni152_template)
-        xform_mni152_tk_ras = mni152_template.header.get_vox2ras_tkr()
-
-        mni152_img = nib.load(mni152_template_nii)
-
-        # get electrodes.tsv file from ses 0 in the data/output/ram directory
-        electrodes_tsv_file = list(self.subject_dir.rglob("**/*ieeg*/*ses-0*_electrodes.tsv"))[0]
-        electrodes = pd.read_csv(electrodes_tsv_file, sep="\t")
-        electrodes = electrodes.rename(columns={'name': 'labels', 'x': 'mm_x', 'y': 'mm_y', 'z': 'mm_z'})
-
-        # Convert world coordinates in mm to voxel space
-        mm_coords = electrodes[['mm_x', 'mm_y', 'mm_z']]
+        electrodes = pd.DataFrame()
         
-        # MNI152 world coordinates (mm) -> voxel coordinates
-        voxel_coords = nib.affines.apply_affine(np.linalg.inv(mni152_img.affine), mm_coords)
+        for electrodes_tsv_file in electrodes_tsv_files:
+            electrodes_temp = pd.read_csv(electrodes_tsv_file, sep="\t")
+            electrodes_temp = electrodes_temp.filter(items=['name', 'tal.x', 'tal.y', 'tal.z'])
+            electrodes = pd.concat([electrodes, electrodes_temp])
 
-        # Voxel coordinates -> FreeSurfer surface RAS coordinates (mm)
-        electrodes_homog = np.hstack((voxel_coords, np.ones((voxel_coords.shape[0], 1))))
-        electrodes_surfmm = np.round(np.dot(xform_mni152_tk_ras, electrodes_homog.T).T[:, :3], decimals=4)
-
-        # Add transformed coordinates to electrodes dataframe
-        electrodes['surfmm_x'] = electrodes_surfmm[:, 0]
-        electrodes['surfmm_y'] = electrodes_surfmm[:, 1]
-        electrodes['surfmm_z'] = electrodes_surfmm[:, 2]
-
-        electrodes['vox_x'] = (voxel_coords[:, 0]).astype(int)
-        electrodes['vox_y'] = (voxel_coords[:, 1]).astype(int)
-        electrodes['vox_z'] = (voxel_coords[:, 2]).astype(int)
-
-        drop_columns = ['size', 'group', 'hemisphere', 'type', 'tal.x', 'tal.y', 'tal.z', 'ind.region', 'das.region', 'stein.region']
-        electrodes = electrodes.drop(columns=drop_columns)
-
-        return electrodes
-    
-
-
-
+        df_surf = electrodes[['tal.x', 'tal.y', 'tal.z']]
+        df_surf['colors'] = 1
+        df_surf['size'] = 1
+        df_surf['roi'] = electrodes['name']
+        return df_surf, electrodes
 
 #%%
 
@@ -172,11 +141,12 @@ def is_not_empty(value):
 def main():
     project_root = Path(__file__).parent.parent.parent
     channel_metadata = project_root / "data" / "input" / "ram" / "channel_metadata.csv"
-    data_dir = project_root / "data" / "output" / "ram" / "sub-R1010J"
+    data_dir = project_root / "data" / "output" / "ram"
     standardize_ram = StandardizeRAM(openneuro_subject_dir=data_dir, channel_metadata=channel_metadata)
-    standardize_ram.curate_interictal_ieeg(start_time=0.0, end_time=135.0)
-    standardize_ram.curate_task_ieeg()
-    standardize_ram.curate_ieeg_recon(project_root=project_root)
+    # standardize_ram.curate_interictal_ieeg(start_time=0.0, end_time=135.0)
+    # standardize_ram.curate_task_ieeg()
+    df_surf, electrodes = standardize_ram.curate_ieeg_recon()
+    df_surf.to_csv(project_root / "data" / "output" / "ram" / "electrodes2ROI.node", sep=' ', index=False, header=False)
     
 #%%
 
