@@ -212,7 +212,8 @@ class StandardizeRAM:
             'singularity', 'run',
             '--bind', f"{input_dir.absolute()}:/data/input",
             '--bind', f"{output_dir.absolute()}:/data/output",
-            'ieeg_recon.sif',  # SIF file instead of Docker image
+            '--pwd', '/app',  # Set working directory to /app where the script is located
+            'singularity/ieeg_recon.sif',  # SIF file instead of Docker image
             '--t1', '/data/input/T1.nii.gz',
             '--ct', '/data/input/CT.nii.gz',
             '--elec', '/data/input/electrodes.txt',
@@ -231,7 +232,6 @@ class StandardizeRAM:
         logging.info("Singularity command completed successfully!")
 
 
-
 #%%
 
 def is_not_empty(value):
@@ -247,10 +247,9 @@ def main():
     channel_metadata = project_root / "data" / "input" / "ram" / "channel_metadata.csv"
     data_dir = project_root / "data" / "output" / "ram" / "sub-R1010J"
     standardize_ram = StandardizeRAM(openneuro_subject_dir=data_dir, channel_metadata=channel_metadata)
-    # standardize_ram.curate_interictal_ieeg(start_time=0.0, end_time=135.0)
-    # standardize_ram.curate_task_ieeg()
+    standardize_ram.curate_interictal_ieeg(start_time=0.0, end_time=135.0)
+    standardize_ram.curate_task_ieeg()
     standardize_ram.curate_ieeg_recon(project_root=project_root)
-    # Run Docker container for iEEG reconstruction modules 3 and 4
     standardize_ram.run_ieeg_recon_docker(project_root=project_root)
     
 #%%

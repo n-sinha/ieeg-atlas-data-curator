@@ -12,6 +12,10 @@ _build/
 Data/
 data/
 
+# Singularity files
+singularity/
+*.sif
+
 # Tests
 tests/
 
