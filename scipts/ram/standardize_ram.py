@@ -12,6 +12,7 @@ import nibabel as nib
 from nibabel.affines import apply_affine
 import subprocess
 import os
+import time
 
 from pathlib import Path
 from curate_pull_ram import clean_ram_metadata
@@ -126,6 +127,10 @@ class StandardizeRAM:
         # Create output file for coordinates in MRI space
         output_file = output_dir / 'electrodes_inMRImm.txt'
 
+        # copy /Users/nishant/Dropbox/Sinha/Lab/Research/projects/discover/epilepsy/IEEG-atlas/ieeg-atlas-data-curator/assets/freesurfer/fsaverage/mri/T1.nii.gz to module 2 as ct_to_mri.nii.gz
+        shutil.copy(project_root / 'assets' / 'freesurfer' / 'fsaverage' / 'mri' / 'T1.nii.gz', output_dir / 'ct_to_mri.nii.gz')
+        logging.info(f"Copied T1.nii.gz to {output_dir / 'ct_to_mri.nii.gz'}")
+
         # Write coordinates in MRI space format
         with open(output_file, 'w') as f:
             # Write header
@@ -164,6 +169,12 @@ class StandardizeRAM:
         with open(output_file_module1, 'w') as f:
             f.write('\n'.join(electrodes['name']))
         logging.info(f"Electrode names saved to {output_file_module1}")
+
+        # export ants registraion from ants_fsaverage_MNI152 to module4
+        output_file_module4 = output_dir.parent / 'module4'
+        output_file_module4.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(project_root / 'assets' / 'ants_fsaverage_MNI152', output_file_module4, dirs_exist_ok=True)
+        logging.info(f"Ants registraion from ants_fsaverage_MNI152 saved to {output_file_module4}")
 
     def run_ieeg_recon_docker(self, project_root: Path):
         """
@@ -224,7 +235,7 @@ class StandardizeRAM:
                 '--freesurfer-dir', '/data/input/freesurfer',
                 '--output-dir', '/data/output',
                 '--skip-existing',
-                '--modules', '3'
+                '--modules', '3,4'
             ]
             container_type = "Docker"
             
@@ -242,7 +253,7 @@ class StandardizeRAM:
                 '--freesurfer-dir', '/data/input/freesurfer',
                 '--output-dir', '/data/output',
                 '--skip-existing',
-                '--modules', '3'
+                '--modules', '3,4'
             ]
             container_type = "Singularity"
             
@@ -260,7 +271,7 @@ class StandardizeRAM:
                 '--freesurfer-dir', '/data/input/freesurfer',
                 '--output-dir', '/data/output',
                 '--skip-existing',
-                '--modules', '3'
+                '--modules', '3,4'
             ]
             container_type = "Docker"
         
@@ -271,6 +282,10 @@ class StandardizeRAM:
         subprocess.run(container_cmd, check=True)
         # delete container input
         shutil.rmtree(input_dir, ignore_errors=True)
+
+        # rename ct_to_mri.nii.gz to T1.nii.gz
+        shutil.move(output_dir / 'ieeg_recon' / 'module2' / 'ct_to_mri.nii.gz', output_dir / 'ieeg_recon' / 'module2' / 'T1.nii.gz')
+        logging.info(f"Renamed ct_to_mri.nii.gz to T1.nii.gz for accuracy")
         logging.info(f"{container_type} command completed successfully!")
 
 
@@ -287,13 +302,19 @@ def is_not_empty(value):
 def main():
     project_root = Path(__file__).parent.parent.parent
     channel_metadata = project_root / "data" / "input" / "ram" / "channel_metadata.csv"
-    data_dir = project_root / "data" / "output" / "ram" / "sub-R1010J"
-    standardize_ram = StandardizeRAM(openneuro_subject_dir=data_dir, channel_metadata=channel_metadata)
-    standardize_ram.curate_interictal_ieeg(start_time=0.0, end_time=135.0)
-    standardize_ram.curate_task_ieeg()
-    standardize_ram.curate_ieeg_recon(project_root=project_root)
-    standardize_ram.run_ieeg_recon_docker(project_root=project_root)
-    
+
+    all_subjects = list((project_root / "data" / "output" / "ram").glob("sub-*"))
+    for subject_dir in all_subjects:
+        # time it start tic toc
+        start_time = time.time()
+        logging.info(f"Standardizing {subject_dir.name}")
+        standardize_ram = StandardizeRAM(openneuro_subject_dir=subject_dir, channel_metadata=channel_metadata)
+        standardize_ram.curate_interictal_ieeg(start_time=0.0, end_time=135.0)
+        standardize_ram.curate_task_ieeg()
+        standardize_ram.curate_ieeg_recon(project_root=project_root)
+        standardize_ram.run_ieeg_recon_docker(project_root=project_root)
+        end_time = time.time()
+        logging.info(f"Standardization of {subject_dir.name} took {end_time - start_time} seconds")
 #%%
 
 if __name__ == "__main__":
