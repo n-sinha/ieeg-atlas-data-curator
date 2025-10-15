@@ -65,7 +65,7 @@ class StandardizeRAM:
         (self.subject_dir.parent / "BIDS" / subject_id / 'derivatives' / 'ieeg-clips' / 'ses-interictal').mkdir(parents=True, exist_ok=True)
         (self.subject_dir.parent / "BIDS" / subject_id / 'derivatives' / 'ieeg-clips' / 'ses-task').mkdir(parents=True, exist_ok=True)
         (self.subject_dir.parent / "BIDS" / subject_id / 'derivatives' / 'ieeg_recon').mkdir(parents=True, exist_ok=True)
-        logging.info(f"Sirectory structure standardized for {subject_id} in {self.subject_dir.parent / 'BIDS'}")
+        logging.info(f"Directory structure standardized for {subject_id} in {self.subject_dir.parent / 'BIDS'}")
 
     def curate_interictal_ieeg(self, start_time=0.0, end_time=135.0):
 
@@ -207,29 +207,71 @@ class StandardizeRAM:
             shutil.copytree(freesurfer_dir, freesurfer_input_dir)
             logging.info(f"Copied freesurfer directory to: {freesurfer_input_dir}")
         
-        # Build Singularity command (alternative to Docker)
-        singularity_cmd = [
-            'singularity', 'run',
-            '--bind', f"{input_dir.absolute()}:/data/input",
-            '--bind', f"{output_dir.absolute()}:/data/output",
-            '--pwd', '/app',  # Set working directory to /app where the script is located
-            'singularity/ieeg_recon.sif',  # SIF file instead of Docker image
-            '--t1', '/data/input/T1.nii.gz',
-            '--ct', '/data/input/CT.nii.gz',
-            '--elec', '/data/input/electrodes.txt',
-            '--freesurfer-dir', '/data/input/freesurfer',
-            '--output-dir', '/data/output',
-            '--skip-existing',
-            '--modules', '3'
-        ]
+        # Detect OS and choose containerization method
+        import platform
+        os_name = platform.system().lower()
         
-        logging.info(f"Running Singularity command for iEEG reconstruction module 3...")
-        logging.info(f"Command: {' '.join(singularity_cmd)}")
+        if os_name == 'darwin':  # macOS
+            # Build Docker command for macOS
+            container_cmd = [
+                'docker', 'run',
+                '-v', f"{input_dir.absolute()}:/data/input",
+                '-v', f"{output_dir.absolute()}:/data/output",
+                'nishantsinha89/ieeg_recon:latest',
+                '--t1', '/data/input/T1.nii.gz',
+                '--ct', '/data/input/CT.nii.gz',
+                '--elec', '/data/input/electrodes.txt',
+                '--freesurfer-dir', '/data/input/freesurfer',
+                '--output-dir', '/data/output',
+                '--skip-existing',
+                '--modules', '3'
+            ]
+            container_type = "Docker"
+            
+        elif os_name == 'linux':  # Linux
+            # Build Singularity command for Linux
+            container_cmd = [
+                'singularity', 'run',
+                '--bind', f"{input_dir.absolute()}:/data/input",
+                '--bind', f"{output_dir.absolute()}:/data/output",
+                '--pwd', '/app',  # Set working directory to /app where the script is located
+                'singularity/ieeg_recon.sif',  # SIF file instead of Docker image
+                '--t1', '/data/input/T1.nii.gz',
+                '--ct', '/data/input/CT.nii.gz',
+                '--elec', '/data/input/electrodes.txt',
+                '--freesurfer-dir', '/data/input/freesurfer',
+                '--output-dir', '/data/output',
+                '--skip-existing',
+                '--modules', '3'
+            ]
+            container_type = "Singularity"
+            
+        else:
+            # Fallback to Docker for other OS (Windows, etc.)
+            logging.warning(f"Unsupported OS: {os_name}. Defaulting to Docker.")
+            container_cmd = [
+                'docker', 'run',
+                '-v', f"{input_dir.absolute()}:/data/input",
+                '-v', f"{output_dir.absolute()}:/data/output",
+                'nishantsinha89/ieeg_recon:latest',
+                '--t1', '/data/input/T1.nii.gz',
+                '--ct', '/data/input/CT.nii.gz',
+                '--elec', '/data/input/electrodes.txt',
+                '--freesurfer-dir', '/data/input/freesurfer',
+                '--output-dir', '/data/output',
+                '--skip-existing',
+                '--modules', '3'
+            ]
+            container_type = "Docker"
         
-        subprocess.run(singularity_cmd, check=True)
-        # delete singularity input
+        logging.info(f"Detected OS: {os_name}")
+        logging.info(f"Running {container_type} command for iEEG reconstruction module 3...")
+        logging.info(f"Command: {' '.join(container_cmd)}")
+        
+        subprocess.run(container_cmd, check=True)
+        # delete container input
         shutil.rmtree(input_dir, ignore_errors=True)
-        logging.info("Singularity command completed successfully!")
+        logging.info(f"{container_type} command completed successfully!")
 
 
 #%%
