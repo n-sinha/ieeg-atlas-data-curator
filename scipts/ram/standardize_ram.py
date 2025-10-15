@@ -17,10 +17,46 @@ import time
 from pathlib import Path
 from curate_pull_ram import clean_ram_metadata
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+# Set up logging configuration
+def setup_logging(log_file_path=None):
+    """
+    Set up logging with both console and file output.
+    
+    Args:
+        log_file_path (Path, optional): Path to save log file. If None, only console logging.
+    """
+    # Create formatter
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    
+    # Get the root logger
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    
+    # Clear any existing handlers to avoid duplicates
+    logger.handlers.clear()
+    
+    # Add console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+    
+    # Add file handler if log_file_path is provided
+    if log_file_path:
+        # Ensure the log directory exists
+        log_file_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        file_handler = logging.FileHandler(log_file_path, mode='w')
+        file_handler.setLevel(logging.INFO)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+        
+        logging.info(f"Logging to file: {log_file_path}")
+    
+    return logger
+
+# Initialize logging (console only for now)
+setup_logging()
 
 #%%
 class StandardizeRAM:
@@ -305,16 +341,26 @@ def main():
 
     all_subjects = list((project_root / "data" / "output" / "ram").glob("sub-*"))
     for subject_dir in all_subjects:
-        # time it start tic toc
-        start_time = time.time()
-        logging.info(f"Standardizing {subject_dir.name}")
-        standardize_ram = StandardizeRAM(openneuro_subject_dir=subject_dir, channel_metadata=channel_metadata)
-        standardize_ram.curate_interictal_ieeg(start_time=0.0, end_time=135.0)
-        standardize_ram.curate_task_ieeg()
-        standardize_ram.curate_ieeg_recon(project_root=project_root)
-        standardize_ram.run_ieeg_recon_docker(project_root=project_root)
-        end_time = time.time()
-        logging.info(f"Standardization of {subject_dir.name} took {end_time - start_time} seconds")
+        # Set up logging for this specific subject
+        log_file_path = project_root / 'logs' / f'{subject_dir.name}.log'
+        setup_logging(log_file_path)
+        
+        try:
+            # time it start tic toc
+            start_time = time.time()
+            logging.info(f"Standardizing {subject_dir.name}")
+            standardize_ram = StandardizeRAM(openneuro_subject_dir=subject_dir, channel_metadata=channel_metadata)
+            standardize_ram.curate_interictal_ieeg(start_time=0.0, end_time=135.0)
+            standardize_ram.curate_task_ieeg()
+            standardize_ram.curate_ieeg_recon(project_root=project_root)
+            standardize_ram.run_ieeg_recon_docker(project_root=project_root)
+            end_time = time.time()
+            logging.info(f"Standardization of {subject_dir.name} took {end_time - start_time} seconds")
+            logging.info(f"Logs saved to: {log_file_path}")
+        except Exception as e:
+            logging.error(f"Error standardizing {subject_dir.name}: {e}")
+            logging.info(f"Error logs saved to: {log_file_path}")
+            continue
 #%%
 
 if __name__ == "__main__":

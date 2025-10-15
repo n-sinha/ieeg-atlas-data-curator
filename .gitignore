@@ -6,6 +6,9 @@ ai/
 .asv
 .vscode
 
+# Logs
+logs/
+
 # Data Files
 _build/
 # *.pkl
