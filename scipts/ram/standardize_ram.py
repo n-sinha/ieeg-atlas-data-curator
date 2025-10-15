@@ -207,12 +207,12 @@ class StandardizeRAM:
             shutil.copytree(freesurfer_dir, freesurfer_input_dir)
             logging.info(f"Copied freesurfer directory to: {freesurfer_input_dir}")
         
-        # Build Docker command
-        docker_cmd = [
-            'docker', 'run',
-            '-v', f"{input_dir.absolute()}:/data/input",
-            '-v', f"{output_dir.absolute()}:/data/output",
-            'nishantsinha89/ieeg_recon:latest',
+        # Build Singularity command (alternative to Docker)
+        singularity_cmd = [
+            'singularity', 'run',
+            '--bind', f"{input_dir.absolute()}:/data/input",
+            '--bind', f"{output_dir.absolute()}:/data/output",
+            'ieeg_recon.sif',  # SIF file instead of Docker image
             '--t1', '/data/input/T1.nii.gz',
             '--ct', '/data/input/CT.nii.gz',
             '--elec', '/data/input/electrodes.txt',
@@ -222,13 +222,13 @@ class StandardizeRAM:
             '--modules', '3'
         ]
         
-        logging.info(f"Running Docker command for iEEG reconstruction module 3...")
-        logging.info(f"Command: {' '.join(docker_cmd)}")
+        logging.info(f"Running Singularity command for iEEG reconstruction module 3...")
+        logging.info(f"Command: {' '.join(singularity_cmd)}")
         
-        subprocess.run(docker_cmd, check=True)
-        # delete docker input
+        subprocess.run(singularity_cmd, check=True)
+        # delete singularity input
         shutil.rmtree(input_dir, ignore_errors=True)
-        logging.info("Docker command completed successfully!")
+        logging.info("Singularity command completed successfully!")
 
 
 
