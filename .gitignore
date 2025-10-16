@@ -7,7 +7,8 @@ ai/
 .vscode
 
 # Logs
-logs/
+logs*/
+assets/ants_fsaverage_MNI152/*
 
 # Data Files
 _build/
