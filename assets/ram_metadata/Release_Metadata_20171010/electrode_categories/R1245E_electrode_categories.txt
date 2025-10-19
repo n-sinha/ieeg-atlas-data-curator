@@ -1,17 +1,9 @@
 R1245E
 
 Seizure Onset Zones
+19Ld3 
+19Ld4
 
-12Rd1
-12Rd2
-12Rd3
-12Rd4
-12Rd5
-33Rd1
-33Rd2
-33Rd3
-33Rd4
-33Rd5 
 
 interictal Spikes
 

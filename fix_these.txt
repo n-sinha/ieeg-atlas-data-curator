@@ -1,7 +1,33 @@
-R1013E, R1035M, R1039M, R1041M, R1045E, R1048E, R1052E, R1057E, R1059J, R1063C, 
-R1074M, R1080E, R1081J, R1092J, R1093J, R1096E, R1098D, R1105E, R1106M, R1108J, 
-R1118N, R1120E, R1122E, R1124J, R1128E, R1130M, R1135E, R1137E, R1138T, R1144E, 
-R1145J, R1146E, R1151E, R1161E, R1163T, R1170J, R1192C, R1196N, R1198M, R1200T, 
-R1202M, R1204T, R1223E, R1226D, R1229M, R1231M, R1232N, R1235E, R1239E, R1245E, 
-R1250N, R1254E, R1260D, R1268T, R1269E, R1274T, R1278E, R1283T, R1286J, R1297T, 
-R1298E, R1303E, R1304N
+# PATIENT GROUPING BY CHANNEL MISMATCH REASON
+# ===========================================
+
+# 1. VALIDATION FAILED - STILL NEED FIXES (17 patients)
+# These files still have validation failures after electrode category fixes
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1039M.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1048E.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1052E.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1074M.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1081J.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1130M.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1135E.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1170J.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1192C.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1223E.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1231M.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1268T.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1269E.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1274T.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1278E.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1286J.log (fix)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1298E.log (fix)
+
+# 2. VALIDATION PASSED - SUCCESSFULLY FIXED (2 patients)
+# These files now pass validation after electrode category fixes
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1098D.log (fixed)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1106M.log (fixed)
+
+# 3. FILE NOT FOUND ERRORS (3 patients)
+# Reconstruction files missing - cannot be fixed
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1198M.log (ignore)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1229M.log (ignore)
+/users/nishants/ieeg-atlas-data-curator/logs_channels/sub-R1236J.log (ignore)

@@ -340,6 +340,7 @@ def main():
     channel_metadata = project_root / "data" / "input" / "ram" / "channel_metadata.csv"
 
     all_subjects = list((project_root / "data" / "output" / "ram").glob("sub-*"))
+    all_subjects = [subject for subject in all_subjects if subject.name == "sub-R1229M"]
     for subject_dir in all_subjects:
         # Set up logging for this specific subject
         log_file_path = project_root / 'logs' / f'{subject_dir.name}.log'
@@ -350,9 +351,9 @@ def main():
             start_time = time.time()
             logging.info(f"Standardizing {subject_dir.name}")
             standardize_ram = StandardizeRAM(openneuro_subject_dir=subject_dir, channel_metadata=channel_metadata)
-            standardize_ram.curate_interictal_ieeg(start_time=0.0, end_time=135.0)
-            standardize_ram.curate_task_ieeg()
-            standardize_ram.curate_ieeg_recon(project_root=project_root)
+            # standardize_ram.curate_interictal_ieeg(start_time=0.0, end_time=135.0)
+            # standardize_ram.curate_task_ieeg()
+            # standardize_ram.curate_ieeg_recon(project_root=project_root)
             standardize_ram.run_ieeg_recon_docker(project_root=project_root)
             end_time = time.time()
             logging.info(f"Standardization of {subject_dir.name} took {end_time - start_time} seconds")

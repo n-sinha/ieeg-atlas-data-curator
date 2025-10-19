@@ -10,8 +10,6 @@ RAPS3
 RPFS1
 RPFS2
 RPFS3
-RMFS1
-RMFS2
 
 Interictal Spikes
 

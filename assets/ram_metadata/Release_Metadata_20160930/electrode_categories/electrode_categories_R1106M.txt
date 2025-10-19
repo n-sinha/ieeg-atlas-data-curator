@@ -6,16 +6,16 @@ Seizure Onset Zone
 
 Interictal
 
-RAF2
-RAF3
-RAF4
-RAF5
-RAF6
-RPF6
-RPF7
-RPF8
-RPS6
-RPS7
+RA2
+RA3
+RA4
+RA5
+RA6
+RPII6
+RPII7
+RPII8
+RPII6
+RPII7
 
 Bad electrodes
 
